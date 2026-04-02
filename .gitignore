@@ -1,0 +1,61 @@
+# Fichiers spécifiques à PHP
+*.log
+*.sql
+*.sqlite
+*.sqlite3
+error_log
+php_errors.log
+*.cache
+
+# Dossiers de dépendances (Composer)
+/vendor/
+composer.phar
+composer.lock  # À committer si vous voulez versionner les versions exactes
+
+# Fichiers d'environnement
+.env
+.env.local
+.env.*.local
+.phpunit.result.cache
+
+# IDE et éditeurs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.project
+.classpath
+.settings/
+.netbeans/
+*.sublime-*
+
+# Fichiers système
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Dossiers de cache et logs
+/cache/
+/logs/
+/tmp/
+/sessions/
+
+# Fichiers de configuration locaux
+config.local.php
+config_dev.php
+*.local.php
+
+# Fichiers uploads (sauf si nécessaire en versionnage)
+/uploads/
+/media/temp/
+
+# Fichiers de debug et test
+/test_results/
+/coverage/
+*.orig
+*.rej
+
+# Cursor spécifique
+.cursor/
+*.cursorrules
