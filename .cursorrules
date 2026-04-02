@@ -1,9 +1,0 @@
-# Consignes projet (Evo-CMS / workspace)
-
-- Ne jamais refactoriser le code SAUF si l'utilisateur le demande explicitement.
-- Toujours utiliser les fonctionnalités et conventions existantes du projet.
-- Toujours respecter la structure du projet (chemins, patterns, fichiers existants).
-- Ne jamais créer de fichiers Markdown (.md) sauf demande explicite de l'utilisateur.
-- Ne pas supprimer de code ou de comportement sans accord explicite de l'utilisateur.
-- Préférer des changements minimaux et ciblés à la demande.
-- Ne pas ajouter de contenu ou de code que l'utilisateur n'a pas demandé.
