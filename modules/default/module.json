@@ -1,0 +1,44 @@
+{
+    "name": "default",
+    "title": "Thème par défaut",
+    "description": "Interface sobre et professionnelle pour EvoCMS. Auteur : Yan Bourgeois (coolternet@live.ca).",
+    "version": "2.0.0",
+    "author": "Yan Bourgeois <coolternet@live.ca>",
+    "exports": ["theme"],
+
+    "homepage": "",
+    "manifest": "",
+    "download": "",
+
+    "changelog": [
+        { "version": "2.0.0", "date": "2026-04-02", "changes": "Thème initial : mise en page moderne, Source Sans 3, variables CSS." },
+        { "version": "2.0.1", "date": "2026-04-02", "changes": "Dossier du module renommé en « default »." }
+    ],
+
+    "settings": {
+        "theme.logo": {
+            "type": "image",
+            "label": "Logo du site"
+        },
+        "theme.background": {
+            "type": "image",
+            "label": "Image de fond (optionnel)",
+            "css": "body.website.theme-default { background-image: url(%s) !important; background-size: cover; background-attachment: fixed; }"
+        },
+        "theme.bg_color": {
+            "type": "color",
+            "label": "Couleur de fond",
+            "css": "body.website.theme-default { background-color: %s !important; }"
+        },
+        "theme.text_color": {
+            "type": "color",
+            "label": "Couleur du texte principal",
+            "css": "body.website.theme-default { color: %s !important; }"
+        },
+        "theme.accent": {
+            "type": "color",
+            "label": "Couleur d’accent (liens, boutons)",
+            "css": "body.website.theme-default { --theme-accent: %s !important; }"
+        }
+    }
+}

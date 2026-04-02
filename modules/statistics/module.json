@@ -1,0 +1,59 @@
+{
+    "name": "statistics",
+    "description": "Module de statistiques avancées pour EvoCMS - Suivi des visiteurs, pages populaires et métriques du site",
+    "version": "1.0.0",
+    "author": "EvoCMS Team <support@evocms.com>",
+    "contributors": [
+        "Développeur <dev@evocms.com> (https://evocms.com)"
+    ],
+    "exports": ["plugin"],
+
+    "homepage": "https://evocms.com/modules/statistics",
+    "manifest": "https://github.com/evocms-project/evocms/tree/master/modules/statistics/module.json",
+    "download": "https://evocms.com/downloads/statistics",
+
+    "changelog": [
+        { "version": "1.0.0", "date": "2024-12-19", "changes": "Version initiale avec suivi des visiteurs et pages populaires" }
+    ],
+
+    "settings": {
+        "track_bots": {
+            "type": "bool", 
+            "label": "Suivre les robots et crawlers", 
+            "default": false,
+            "description": "Activer pour inclure les visites des robots dans les statistiques"
+        },
+        "track_user_agents": {
+            "type": "bool", 
+            "label": "Enregistrer les User-Agents", 
+            "default": true,
+            "description": "Stocke les informations sur les navigateurs et systèmes d'exploitation"
+        },
+        "retention_days": {
+            "type": "enum", 
+            "label": "Durée de rétention des données", 
+            "choices": [30, 60, 90, 180, 365],
+            "default": 90,
+            "description": "Nombre de jours de conservation des données de visite"
+        },
+        "auto_cleanup": {
+            "type": "bool", 
+            "label": "Nettoyage automatique", 
+            "default": true,
+            "description": "Supprime automatiquement les anciennes données selon la rétention"
+        },
+        "privacy_mode": {
+            "type": "bool", 
+            "label": "Mode confidentialité", 
+            "default": false,
+            "description": "Anonymise les adresses IP pour respecter le RGPD"
+        }
+    },
+
+    "permissions": {
+        "view": "Voir les statistiques publiques",
+        "admin": "Accéder à l'administration des statistiques",
+        "export": "Exporter les données de statistiques",
+        "delete": "Supprimer les données de statistiques"
+    }
+}

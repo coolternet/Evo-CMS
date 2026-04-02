@@ -1,0 +1,184 @@
+#sidebar {
+    display: none;
+}
+
+.table th {
+    font-weight: 500;
+}
+
+.table-sm td, .table-sm th {
+    white-space: nowrap;
+    width: 1%;
+}
+
+#tickets_list td {
+    vertical-align: unset !important;
+}
+
+.ticket-view h3 {
+    font-weight: 300;
+    margin-bottom: 25px
+}
+
+.ticket-view .badge {
+    font-size: 50%;
+    position: relative;
+    top: -5px;
+}
+
+#conversation {
+    margin: 0 30px 0 30px;
+}
+
+#conversation .ticket_header {
+    font-family: 'Open Sans', sans-serif;
+    color: #34393C;
+    font-weight: 500;
+}
+
+#conversation .ticket_content_client {
+    background-color: #ececec;
+    color: #333;
+    padding: 15px;
+    margin-bottom: 20px;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    overflow-wrap: break-word;
+}
+
+#conversation .ticket_content_staff {
+    background-color: #98BF1B;
+    color: #333;
+    padding: 15px;
+    margin-bottom: 20px;
+    border: 1px solid #87b100;
+    border-radius: 4px;
+}
+
+div#commentaire .form-control {
+    display: block;
+    width: 100%;
+    padding: 6px 12px;
+    font-size: 14px;
+    line-height: 1.42857143;
+    color: #555;
+    background-color: #fff;
+    background-image: none;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+/* Styles pour la page de visualisation des tickets - Hauteur maximale */
+.ticket-view {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.ticket-view .container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+}
+
+.ticket-view .row {
+    flex: 1;
+    display: flex;
+    min-height: 0;
+}
+
+.ticket-view .col-sm-12.col-md-8.col-lg-8.col-xl-9 {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    flex: 1;
+}
+
+.ticket-view .card {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+}
+
+.ticket-view .card-body {
+    flex: 1;
+    overflow-y: auto;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+#conversation {
+    flex: 1;
+    overflow-y: auto;
+    min-height: 0;
+    margin: 0 30px 0 30px;
+    padding: 15px;
+    max-height: none;
+}
+
+/* Styles pour les messages */
+.message-item {
+    margin-bottom: 15px;
+    animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Scroll personnalisé pour la conversation */
+#conversation::-webkit-scrollbar {
+    width: 8px;
+}
+
+#conversation::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+#conversation::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 4px;
+}
+
+#conversation::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+/* Indicateur de scroll */
+.scroll-indicator {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 5px 10px;
+    border-radius: 15px;
+    font-size: 12px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.scroll-indicator.show {
+    opacity: 1;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .ticket-view .row {
+        flex-direction: column;
+    }
+    
+    .ticket-view .col-sm-12.col-md-8.col-lg-8.col-xl-9 {
+        flex: 1;
+        min-height: 50vh;
+    }
+    
+    #conversation {
+        margin: 0 15px 0 15px;
+    }
+}

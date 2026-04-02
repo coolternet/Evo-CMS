@@ -1,0 +1,24 @@
+{
+    "name": "Evo-TSM",
+    "description": "Système de tickets de support technique pour EvoCMS",
+    "version": "1.0.0",
+    "author": "EvoCMS Team (coolternet@evolution-network.ca)",
+    "contributors": [],
+    "exports": ["plugin"],
+
+    "homepage": "https://evolution-network.ca",
+    "manifest": "https://github.com/evocms-project/evocms/tree/master/modules/Evo-TSM/module.json",
+    "download": "",
+
+    "changelog": [
+        { "version": "1.0.0", "date": "2025-01-10", "changes": "Version initiale du système de tickets de support" }
+    ],
+
+    "settings": {},
+
+    "permissions": {
+        "manage_tickets": "Gérer les tickets de support",
+        "view_tickets": "Consulter les tickets de support",
+        "contact_support": "Contacter le support technique"
+    }
+}
