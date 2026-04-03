@@ -997,26 +997,34 @@ $install_pill_tooltip = htmlspecialchars(
 <body class="evo-install<?= $cur_step < 0 ? ' evo-install--blocked' : '' ?><?= $cur_step >= 0 ? ' evo-install--has-sidebar' : '' ?>" data-evo-install-step="<?= (int) $cur_step ?>">
     <div class="evo-install__ambient" aria-hidden="true">
         <div class="evo-install__ambient-base"></div>
+        <div class="evo-install__ambient-glow evo-install__ambient-glow--top"></div>
         <div class="evo-install__ambient-glow evo-install__ambient-glow--tl"></div>
         <div class="evo-install__ambient-glow evo-install__ambient-glow--br"></div>
     </div>
     <div class="evo-install__frame">
         <header class="evo-install__header">
+            <?php if ($cur_step >= 0): ?>
+            <button type="button" class="evo-install__nav-toggle" id="evo-install-nav-toggle" aria-expanded="false" aria-controls="evo-install-sidebar" data-evo-install-label-open="<?= htmlspecialchars(__('install.nav_open_menu'), ENT_QUOTES, 'UTF-8') ?>" data-evo-install-label-close="<?= htmlspecialchars(__('install.nav_close_menu'), ENT_QUOTES, 'UTF-8') ?>" aria-label="<?= htmlspecialchars(__('install.nav_open_menu'), ENT_QUOTES, 'UTF-8') ?>">
+                <span class="evo-install__nav-toggle-icon evo-install__nav-toggle-icon--menu" aria-hidden="true"><?= install_lucide_icon('menu', ['class' => 'evo-install__nav-toggle-svg', 'width' => 24, 'height' => 24]) ?></span>
+                <span class="evo-install__nav-toggle-icon evo-install__nav-toggle-icon--close" hidden aria-hidden="true"><?= install_lucide_icon('x', ['class' => 'evo-install__nav-toggle-svg', 'width' => 24, 'height' => 24]) ?></span>
+            </button>
+            <?php endif; ?>
             <div class="evo-install__brand">
-                <div class="evo-install__brand-text">
-                    <h1 class="evo-install__product">Evo-CMS</h1>
-                    <p class="evo-install__subtitle"><?= __('install.subtitle') ?></p>
-                </div>
+                <h1 class="evo-install__product">Evo-CMS</h1>
+                <p class="evo-install__subtitle"><?= __('install.subtitle') ?></p>
             </div>
             <div class="evo-install__meta">
                 <span class="evo-install__pill" title="<?= $install_pill_tooltip ?>" aria-label="<?= $install_pill_display_esc ?>"><?= $install_pill_display_esc ?></span>
             </div>
         </header>
 
-        <main class="evo-install__main">
-            <div class="evo-install__card<?= $cur_step >= 0 ? ' evo-install__card--split' : '' ?>">
-                <?php if ($cur_step >= 0): ?>
-                <aside class="evo-install__sidebar">
+        <?php if ($cur_step >= 0): ?>
+        <div class="evo-install__sidebar-backdrop" id="evo-install-sidebar-backdrop" aria-hidden="true"></div>
+        <div class="evo-install__split-wrap">
+        <aside id="evo-install-sidebar" class="evo-install__sidebar">
+                <div class="evo-install__sidebar-head">
+                    <button type="button" class="evo-install__sidebar-close" id="evo-install-sidebar-close" aria-label="<?= htmlspecialchars(__('install.nav_close_menu'), ENT_QUOTES, 'UTF-8') ?>"><?= install_lucide_icon('x', ['class' => 'evo-install__sidebar-close-svg', 'width' => 22, 'height' => 22]) ?></button>
+                </div>
                 <nav class="evo-install__progress" aria-label="<?= htmlspecialchars(__('install.nav_aria'), ENT_QUOTES, 'UTF-8') ?>">
                     <ol class="evo-install__steps">
                     <?php
@@ -1091,11 +1099,12 @@ $install_pill_tooltip = htmlspecialchars(
                     <?php endif; ?>
                     <p class="evo-install__eta-copyright"><?= htmlspecialchars(str_replace('%year%', (string) date('Y'), __('install.copyright')), ENT_QUOTES, 'UTF-8') ?></p>
                 </div>
-                </aside>
-                <?php endif; ?>
+        </aside>
+        <?php endif; ?>
 
+        <main class="evo-install__main">
+            <div class="evo-install__card<?= $cur_step >= 0 ? ' evo-install__card--split' : '' ?>">
                 <div class="evo-install__panel">
-                <div class="evo-install__body">
                     <form method="post" autocomplete="off" id="form-content" class="evo-install__form container">
                         <?php if (!empty($warning)): ?>
                             <div class="alert alert-error">
@@ -1496,9 +1505,11 @@ $install_pill_tooltip = htmlspecialchars(
 						<?php endif; ?>
 					</form>
                 </div>
-                </div>
             </div>
         </main>
+        <?php if ($cur_step >= 0): ?>
+        </div>
+        <?php endif; ?>
     </div>
     <script>
         $(function() {
@@ -1566,6 +1577,92 @@ $install_pill_tooltip = htmlspecialchars(
                     form.addEventListener('animationend', onAnimEnd);
                 });
             }
+
+            (function () {
+                var toggle = document.getElementById('evo-install-nav-toggle');
+                var backdrop = document.getElementById('evo-install-sidebar-backdrop');
+                var closeBtn = document.getElementById('evo-install-sidebar-close');
+                if (!toggle || !backdrop) {
+                    return;
+                }
+                var $body = $('body');
+                var mq = window.matchMedia('(max-width: 1024px)');
+
+                function openLabel() {
+                    return toggle.getAttribute('data-evo-install-label-open') || '';
+                }
+
+                function closeLabel() {
+                    return toggle.getAttribute('data-evo-install-label-close') || '';
+                }
+
+                function setNavOpen(open) {
+                    if (open) {
+                        $body.addClass('evo-install--nav-open');
+                        toggle.setAttribute('aria-expanded', 'true');
+                        toggle.setAttribute('aria-label', closeLabel());
+                        backdrop.setAttribute('aria-hidden', 'false');
+                        var menuIcon = toggle.querySelector('.evo-install__nav-toggle-icon--menu');
+                        var closeIcon = toggle.querySelector('.evo-install__nav-toggle-icon--close');
+                        if (menuIcon) {
+                            menuIcon.setAttribute('hidden', 'hidden');
+                        }
+                        if (closeIcon) {
+                            closeIcon.removeAttribute('hidden');
+                        }
+                        document.body.style.overflow = 'hidden';
+                    } else {
+                        $body.removeClass('evo-install--nav-open');
+                        toggle.setAttribute('aria-expanded', 'false');
+                        toggle.setAttribute('aria-label', openLabel());
+                        backdrop.setAttribute('aria-hidden', 'true');
+                        var menuIcon2 = toggle.querySelector('.evo-install__nav-toggle-icon--menu');
+                        var closeIcon2 = toggle.querySelector('.evo-install__nav-toggle-icon--close');
+                        if (menuIcon2) {
+                            menuIcon2.removeAttribute('hidden');
+                        }
+                        if (closeIcon2) {
+                            closeIcon2.setAttribute('hidden', 'hidden');
+                        }
+                        document.body.style.overflow = '';
+                    }
+                }
+
+                function onToggleClick() {
+                    if (!mq.matches) {
+                        return;
+                    }
+                    setNavOpen(!$body.hasClass('evo-install--nav-open'));
+                }
+
+                toggle.addEventListener('click', onToggleClick);
+                backdrop.addEventListener('click', function () {
+                    setNavOpen(false);
+                });
+                if (closeBtn) {
+                    closeBtn.addEventListener('click', function () {
+                        setNavOpen(false);
+                    });
+                }
+                document.addEventListener('keydown', function (e) {
+                    if (e.key !== 'Escape') {
+                        return;
+                    }
+                    if ($body.hasClass('evo-install--nav-open')) {
+                        setNavOpen(false);
+                    }
+                });
+                window.addEventListener('resize', function () {
+                    if (!mq.matches) {
+                        setNavOpen(false);
+                    }
+                });
+                $(document).on('click', '#evo-install-sidebar .evo-install__step-nav', function () {
+                    if (mq.matches) {
+                        setNavOpen(false);
+                    }
+                });
+            })();
 
             $(document).on('click', 'a.evo-install-lang-option', function (e) {
                 var href = this.getAttribute('href');

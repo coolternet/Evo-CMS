@@ -17,6 +17,8 @@ return [
 	'install.nav_aria' => 'Instalación',
 	'install.social_nav_aria' => 'Enlaces de la comunidad y redes Evo-CMS',
 	'install.copyright' => "© %year% por Evolution-Network\nTodos los derechos reservados.",
+	'install.nav_open_menu' => 'Abrir el menú de pasos de instalación',
+	'install.nav_close_menu' => 'Cerrar el menú de pasos de instalación',
 	'install.eta' => 'La configuración se completará en aproximadamente %min% minutos.',
 
 	'language.title' => 'Selección de idioma',
