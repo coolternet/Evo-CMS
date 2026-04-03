@@ -933,22 +933,6 @@ body.evo-install.evo-install--blocked {
     letter-spacing: -0.01em;
 }
 
-.evo-install-lang-option__id {
-    flex-shrink: 0;
-    margin-left: auto;
-    font-size: 0.65rem;
-    font-weight: 500;
-    color: var(--evo-ink-muted);
-    font-family: ui-monospace, "Cascadia Code", "Segoe UI Mono", monospace;
-    padding: 0.12rem 0.35rem;
-    border-radius: 5px;
-    background: rgba(2, 6, 23, 0.45);
-}
-
-.evo-install-lang-option.is-selected .evo-install-lang-option__id {
-    color: var(--evo-active-amber);
-}
-
 /* —— Formulaires —— */
 .form-label {
     display: block;

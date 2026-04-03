@@ -35,6 +35,11 @@ function install_locale_country_code(string $localeId): string {
 		'en' => 'GB',
 		'french' => 'FR',
 		'fr' => 'FR',
+		'it' => 'IT',
+		'es' => 'ES',
+		'du' => 'NL',
+		'ru' => 'RU',
+		'de' => 'DE',
 		'german' => 'DE',
 		'deutsch' => 'DE',
 		'spanish' => 'ES',
@@ -237,7 +242,16 @@ foreach ($install_locale_ids as $_lid) {
 	}
 }
 asort($install_language_options, SORT_NATURAL | SORT_FLAG_CASE);
-$html_lang = $install_locale === 'english' ? 'en' : ($install_locale === 'french' ? 'fr' : 'en');
+$html_lang_map = [
+	'english' => 'en',
+	'french' => 'fr',
+	'it' => 'it',
+	'es' => 'es',
+	'du' => 'nl',
+	'ru' => 'ru',
+	'de' => 'de',
+];
+$html_lang = $html_lang_map[$install_locale] ?? 'en';
 
 if (file_exists('../config.php') && $cur_step != STEP_CLEANUP) {
 	$warning = __('already_installed');
@@ -973,7 +987,7 @@ $__href_flags_css = htmlspecialchars($__install_uri . '/assets/flags.css', ENT_Q
 
 /** Liens par défaut du projet (Evolution-Network) — barre latérale installation */
 $install_eta_site_url = 'http://www.evolution-network.ca';
-$install_eta_github_repo = 'https://github.com/coolternet/Unofficial_Files_CMS';
+$install_eta_github_repo = 'https://github.com/coolternet/Evo-CMS';
 $install_eta_links = [
 	[
 		'href' => 'https://www.facebook.com/profile.php?id=100064090205432',
@@ -1142,7 +1156,6 @@ $install_pill_tooltip = htmlspecialchars(
                                         <?php
                                         foreach ($install_language_options as $locale => $name) {
                                             $isSel = $locale === $install_locale;
-                                            $localeEsc = htmlspecialchars($locale, ENT_QUOTES, 'UTF-8');
                                             $nameEsc = htmlspecialchars($name, ENT_QUOTES, 'UTF-8');
                                             echo '<li class="evo-install-lang-list__item" role="listitem">';
                                             $flagHtml = Widgets::countryFlag(install_locale_country_code($locale));
@@ -1150,7 +1163,6 @@ $install_pill_tooltip = htmlspecialchars(
                                             echo '<a href="' . $langHref . '" class="evo-install-lang-option' . ($isSel ? ' is-selected' : '') . '" id="install_lang_' . preg_replace('/[^a-z0-9_-]/i', '_', $locale) . '" aria-current="' . ($isSel ? 'true' : 'false') . '">';
                                             echo '<span class="evo-install-lang-option__flag" aria-hidden="true">' . $flagHtml . '</span>';
                                             echo '<span class="evo-install-lang-option__name">' . $nameEsc . '</span>';
-                                            echo '<span class="evo-install-lang-option__id">' . $localeEsc . '</span>';
                                             echo '</a></li>';
                                         }
                                         ?>
