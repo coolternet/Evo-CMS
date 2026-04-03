@@ -364,16 +364,37 @@ class Widgets
 			}
 		}
 
-		$class = 'flag-icon flag-' . strtolower($country_code);
 		$label = html_encode($country_name);
+		$codeLower = strtolower($country_code);
+
+		if (preg_match('/^[a-z]{2}$/', $codeLower)) {
+			$src = self::countryFlagSvgUrl($codeLower);
+			$img = '<img class="flag-icon flag-flag-svg" src="' . html_encode($src) . '" alt="" width="16" height="12" loading="lazy" decoding="async" title="' . $label . '">';
+		} else {
+			$img = '<span class="flag-icon flag-unknown" title="' . $label . '" aria-hidden="true"></span>';
+		}
 
 		if ($show_name) {
-			$html = '<span><i class="' . $class . '" title="' . $label . '"></i> ' . $label . '</span>';
+			$html = '<span>' . $img . ' ' . $label . '</span>';
 		} else {
-			$html = '<span><i class="' . $class . '" title="' . $label . '"></i></span>';
+			$html = '<span>' . $img . '</span>';
 		}
 
 		return $html;
+	}
+
+	/**
+	 * URL du SVG (copie locale sous assets/country-flag/svg/ ou CDN hampusborgos/country-flags).
+	 */
+	private static function countryFlagSvgUrl(string $isoLower): string
+	{
+		$localPath = ROOT_DIR . '/assets/country-flag/svg/' . $isoLower . '.svg';
+		if (is_file($localPath)) {
+			$url = App::getAsset('country-flag/svg/' . $isoLower . '.svg');
+			return $url !== false ? $url : (EVO_COUNTRY_FLAGS_SVG_BASE . $isoLower . '.svg');
+		}
+
+		return EVO_COUNTRY_FLAGS_SVG_BASE . $isoLower . '.svg';
 	}
 
 

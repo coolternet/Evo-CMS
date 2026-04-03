@@ -120,6 +120,48 @@ function install_lang_switch_url(string $locale): string {
 	return htmlspecialchars($path . ($query !== '' ? '?' . $query : ''), ENT_QUOTES, 'UTF-8');
 }
 
+/**
+ * Chemins internes des icônes Lucide (viewBox 0 0 24 24, stroke — lucide.dev).
+ */
+function install_lucide_paths(string $name): string {
+	static $paths = [
+		'languages' => '<path d="m5 8 6 6"/><path d="m4 14 6-6 2-3"/><path d="M2 5h12"/><path d="M7 2h1"/><path d="m22 22-5-5"/><path d="M12 12h3"/>',
+		'earth' => '<path d="M21.54 15H17a2 2 0 0 0-2 2v4.54"/><path d="M7 3.34V5a3 3 0 0 0 3 3a2 2 0 0 1 2 2c0 1.1.9 2 2 2a2 2 0 0 0 2-2c0-1.1.9-2 2-2h3.17"/><path d="M11 21.95V18a2 2 0 0 0-2-2a2 2 0 0 1-2-2v-1a2 2 0 0 0-2-2H2.05"/><circle cx="12" cy="12" r="10"/>',
+		'file-text' => '<path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/>',
+		'clipboard-check' => '<rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="m9 14 2 2 4-4"/>',
+		'database' => '<ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5V19A9 3 0 0 0 21 19V5"/><path d="M3 12A9 3 0 0 0 21 12"/>',
+		'sliders-horizontal' => '<line x1="21" x2="14" y1="4" y2="4"/><line x1="10" x2="3" y1="4" y2="4"/><line x1="21" x2="12" y1="12" y2="12"/><line x1="8" x2="3" y1="12" y2="12"/><line x1="21" x2="16" y1="20" y2="20"/><line x1="12" x2="3" y1="20" y2="20"/><line x1="14" x2="14" y1="4" y2="5"/><line x1="8" x2="8" y1="12" y2="13"/><line x1="16" x2="16" y1="20" y2="21"/>',
+		'download' => '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/>',
+		'flag' => '<path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" x2="4" y1="22" y2="15"/>',
+		'facebook' => '<path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/>',
+		'globe' => '<circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/>',
+		'github' => '<path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>',
+		'circle-check' => '<circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/>',
+		'circle-x' => '<circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/>',
+		'check' => '<path d="M20 6 9 17l-5-5"/>',
+		'chevron-left' => '<path d="m15 18-6-6 6-6"/>',
+		'chevron-right' => '<path d="m9 18 6-6-6-6"/>',
+		'link' => '<path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>',
+		'circle' => '<circle cx="12" cy="12" r="10"/>',
+	];
+	return $paths[$name] ?? $paths['circle'];
+}
+
+/**
+ * SVG Lucide complet (traits 2, arrondis).
+ */
+function install_lucide_icon(string $name, array $attrs = []): string {
+	$inner = install_lucide_paths($name);
+	$class = isset($attrs['class']) ? htmlspecialchars((string) $attrs['class'], ENT_QUOTES, 'UTF-8') : '';
+	$w = isset($attrs['width']) ? (int) $attrs['width'] : 24;
+	$h = isset($attrs['height']) ? (int) $attrs['height'] : 24;
+	$sw = isset($attrs['stroke-width']) ? (string) $attrs['stroke-width'] : '2';
+	$ariaHidden = array_key_exists('aria-hidden', $attrs) ? $attrs['aria-hidden'] : true;
+	$aria = $ariaHidden ? ' aria-hidden="true"' : '';
+	$cls = $class !== '' ? ' class="' . $class . '"' : '';
+	return '<svg xmlns="http://www.w3.org/2000/svg" width="' . $w . '" height="' . $h . '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="' . htmlspecialchars($sw, ENT_QUOTES, 'UTF-8') . '" stroke-linecap="round" stroke-linejoin="round"' . $cls . $aria . '>' . $inner . '</svg>';
+}
+
 $install_locale_ids = [];
 foreach (glob(ROOT_DIR . '/includes/languages/*', GLOB_ONLYDIR) ?: [] as $_evo_lang_dir) {
 	$install_locale_ids[] = basename($_evo_lang_dir);
@@ -153,6 +195,17 @@ $steps = [
 	STEP_CONFIG   => __('steps.config'),
 	STEP_INSTALL  => __('steps.install'),
 	STEP_CLEANUP  => __('steps.finished'),
+];
+
+/** Icônes Lucide (install_lucide_paths) — une par étape du fil, hors états terminé / erreur. */
+$install_step_dot_icons = [
+	STEP_LANGUAGE => 'earth',
+	STEP_ACCEPT   => 'file-text',
+	STEP_SYSCHECK => 'clipboard-check',
+	STEP_DATABASE => 'database',
+	STEP_CONFIG   => 'sliders-horizontal',
+	STEP_INSTALL  => 'download',
+	STEP_CLEANUP  => 'flag',
 ];
 
 $next_step = $cur_step = isset($_POST['step']) ? (int)$_POST['step'] : 0;
@@ -919,22 +972,19 @@ $install_eta_links = [
 		'href' => 'https://www.facebook.com/profile.php?id=100064090205432',
 		'label' => 'Facebook',
 		'title' => 'Facebook',
-		'icon_prefix' => 'fab',
-		'icon' => 'fa-facebook-f',
+		'lucide' => 'facebook',
 	],
 	[
 		'href' => $install_eta_site_url,
 		'label' => 'Site Web',
 		'title' => 'Evolution-Network',
-		'icon_prefix' => 'fas',
-		'icon' => 'fa-globe',
+		'lucide' => 'globe',
 	],
 	[
 		'href' => $install_eta_github_repo,
 		'label' => 'GitHub',
 		'title' => 'GitHub',
-		'icon_prefix' => 'fab',
-		'icon' => 'fa-github',
+		'lucide' => 'github',
 	],
 ];
 
@@ -956,7 +1006,7 @@ $install_pill_tooltip = htmlspecialchars(
 <html lang="<?= htmlspecialchars($html_lang, ENT_QUOTES, 'UTF-8') ?>">
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title><?= htmlspecialchars(__('install.page_title'), ENT_QUOTES, 'UTF-8') ?></title>
     <style id="evo-install-critical">.evo-install__steps{list-style:none;margin:0;padding:0}</style>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -964,7 +1014,6 @@ $install_pill_tooltip = htmlspecialchars(
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="<?= $__href_bootstrap ?>" rel="stylesheet">
     <link href="<?= $__href_flags_css ?>" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet" crossorigin="anonymous" referrerpolicy="no-referrer">
     <link href="<?= $__href_install_css ?>" rel="stylesheet">
     <script src="<?= $__href_vendor ?>"></script>
 </head>
@@ -1012,17 +1061,17 @@ $install_pill_tooltip = htmlspecialchars(
                             $liClass .= ' has-error';
                         }
 
-                        $stepNumber = $step + 1;
                         $tagHtml = htmlentities($tag, ENT_COMPAT, 'UTF-8');
+                        $dot_icon = $install_step_dot_icons[$step] ?? 'circle';
 
                         ob_start();
                         echo '<span class="evo-install__dot">';
                         if ($isCompleted) {
-                            echo '<svg class="evo-install__check" width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M2.5 7L5.5 10L11.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+                            echo install_lucide_icon('check', ['class' => 'evo-install__check', 'width' => 24, 'height' => 24]);
                         } elseif ($hasError) {
                             echo '<span class="evo-install__dot-x">!</span>';
                         } else {
-                            echo '<span class="evo-install__dot-num">' . $stepNumber . '</span>';
+                            echo install_lucide_icon($dot_icon, ['class' => 'evo-install__dot-icon', 'width' => 24, 'height' => 24]);
                         }
                         echo '</span>';
                         echo '<span class="evo-install__step-label">' . $tagHtml . '</span>';
@@ -1048,10 +1097,9 @@ $install_pill_tooltip = htmlspecialchars(
                         <?php foreach ($install_eta_links as $eta_link):
                             $eta_href = $eta_link['href'];
                             $is_skype = str_starts_with($eta_href, 'skype:');
-                            $eta_icon_prefix = $eta_link['icon_prefix'] ?? 'fas';
-                            $eta_icon = $eta_link['icon'] ?? 'fa-link';
+                            $eta_lucide = $eta_link['lucide'] ?? 'link';
                             ?>
-                        <a class="evo-install__eta-social-link" href="<?= htmlspecialchars($eta_href, ENT_QUOTES, 'UTF-8') ?>" title="<?= htmlspecialchars($eta_link['title'], ENT_QUOTES, 'UTF-8') ?>"<?php if (!$is_skype): ?> target="_blank" rel="noopener noreferrer"<?php endif; ?>><i class="<?= htmlspecialchars($eta_icon_prefix . ' ' . $eta_icon, ENT_QUOTES, 'UTF-8') ?>" aria-hidden="true"></i><span class="evo-install__eta-social-text"><?= htmlspecialchars($eta_link['label'], ENT_QUOTES, 'UTF-8') ?></span></a>
+                        <a class="evo-install__eta-social-link" href="<?= htmlspecialchars($eta_href, ENT_QUOTES, 'UTF-8') ?>" title="<?= htmlspecialchars($eta_link['title'], ENT_QUOTES, 'UTF-8') ?>"<?php if (!$is_skype): ?> target="_blank" rel="noopener noreferrer"<?php endif; ?>><?= install_lucide_icon($eta_lucide, ['class' => 'evo-install__eta-ico', 'width' => 16, 'height' => 16]) ?><span class="evo-install__eta-social-text"><?= htmlspecialchars($eta_link['label'], ENT_QUOTES, 'UTF-8') ?></span></a>
                         <?php endforeach; ?>
                     </nav>
                     <?php endif; ?>
@@ -1075,12 +1123,7 @@ $install_pill_tooltip = htmlspecialchars(
                             <div class="step-content evo-install-step evo-install-step--enter">
                                 <div class="step-header">
                                     <div class="step-header__art step-header__art--lang" aria-hidden="true">
-                                        <svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" class="step-header__svg">
-                                            <circle cx="40" cy="40" r="28" stroke="currentColor" stroke-width="2" opacity="0.2"/>
-                                            <path d="M40 12c8 12 12 22 12 28s-4 16-12 28c-8-12-12-22-12-28s4-16 12-28z" stroke="currentColor" stroke-width="1.5" opacity="0.35"/>
-                                            <path d="M12 40h56M40 12v56" stroke="currentColor" stroke-width="1.5" opacity="0.25"/>
-                                            <circle cx="40" cy="40" r="8" fill="currentColor" class="step-header__pulse"/>
-                                        </svg>
+                                        <?= install_lucide_icon('earth', ['class' => 'step-header__svg', 'width' => 72, 'height' => 72]) ?>
                                     </div>
                                     <h2 class="step-title"><?= __('language.title') ?></h2>
                                     <p class="step-description"><?= __('language.description') ?></p>
@@ -1110,6 +1153,11 @@ $install_pill_tooltip = htmlspecialchars(
                         <?php elseif ($cur_step == STEP_ACCEPT): ?>
                             <div class="step-content evo-install-step evo-install-step--enter">
                                 <div class="step-header">
+                                    <div class="step-header__art step-header__art--accept" aria-hidden="true">
+                                        <svg class="step-header__svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                            <?= install_lucide_paths('file-text') ?>
+                                        </svg>
+                                    </div>
                                     <h2 class="step-title"><?= htmlspecialchars(__('acceptance.title'), ENT_QUOTES, 'UTF-8') ?></h2>
                                     <p class="step-description"><?= htmlspecialchars(__('acceptance.description'), ENT_QUOTES, 'UTF-8') ?></p>
                                 </div>
@@ -1126,6 +1174,11 @@ $install_pill_tooltip = htmlspecialchars(
                         <?php elseif ($cur_step == STEP_SYSCHECK): ?>
                             <div class="step-content">
                                 <div class="step-header">
+                                    <div class="step-header__art step-header__art--check" aria-hidden="true">
+                                        <svg class="step-header__svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                            <?= install_lucide_paths('clipboard-check') ?>
+                                        </svg>
+                                    </div>
                                     <h2 class="step-title"><?= __('checks.step_title') ?></h2>
                                     <p class="step-description"><?= __('checks.step_description') ?></p>
                                 </div>
@@ -1140,7 +1193,11 @@ $install_pill_tooltip = htmlspecialchars(
                                         $statusText = $isSuccess ? __('checks.status_ok') : __('checks.status_error');
                                         
                                         echo '<div class="check-item ' . $checkClass . '">';
-                                        echo '<div class="check-icon">' . ($isSuccess ? '✓' : '✗') . '</div>';
+                                        if ($isSuccess) {
+                                            echo '<div class="check-icon"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="check-icon__svg" aria-hidden="true"><circle cx="12" cy="12" r="10" class="check-icon__stroke"/><path class="check-icon__stroke" d="m9 12 2 2 4-4"/></svg></div>';
+                                        } else {
+                                            echo '<div class="check-icon">' . install_lucide_icon('circle-x', ['class' => 'check-icon__svg', 'width' => 18, 'height' => 18]) . '</div>';
+                                        }
                                         echo '<div class="check-text">' . htmlentities($check[0], ENT_COMPAT, 'UTF-8') . '</div>';
                                         echo '<div class="check-status">' . $statusText . '</div>';
                                         echo '</div>';
@@ -1152,11 +1209,8 @@ $install_pill_tooltip = htmlspecialchars(
                             <div class="step-content evo-install-step evo-install-step--enter">
                                 <div class="step-header">
                                     <div class="step-header__art step-header__art--db" aria-hidden="true">
-                                        <svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" class="step-header__svg">
-                                            <ellipse cx="40" cy="22" rx="22" ry="8" stroke="currentColor" stroke-width="2" opacity="0.4"/>
-                                            <path d="M18 22v18c0 4.4 9.8 8 22 8s22-3.6 22-8V22" stroke="currentColor" stroke-width="2" opacity="0.35"/>
-                                            <path d="M18 40v18c0 4.4 9.8 8 22 8s22-3.6 22-8V40" stroke="currentColor" stroke-width="2" opacity="0.25"/>
-                                            <ellipse cx="40" cy="58" rx="22" ry="8" stroke="currentColor" stroke-width="2" opacity="0.4"/>
+                                        <svg class="step-header__svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                            <?= install_lucide_paths('database') ?>
                                         </svg>
                                     </div>
                                     <h2 class="step-title"><?= __('database.step_title') ?></h2>
@@ -1326,11 +1380,9 @@ $install_pill_tooltip = htmlspecialchars(
                             <div class="step-content row evo-install-step evo-install-step--enter">
                                 <div class="step-header">
                                     <div class="step-header__art step-header__art--cfg" aria-hidden="true">
-                                        <svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" class="step-header__svg">
-                                            <rect x="18" y="22" width="44" height="36" rx="6" stroke="currentColor" stroke-width="2" opacity="0.3"/>
-                                            <circle cx="32" cy="36" r="4" fill="currentColor" opacity="0.5" class="step-header__knob"/>
-                                            <circle cx="48" cy="36" r="4" fill="currentColor" opacity="0.35"/>
-                                            <path d="M26 52h28" stroke="currentColor" stroke-width="2" stroke-linecap="round" opacity="0.4"/>
+                                        <svg class="step-header__svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                            <circle cx="14" cy="4" r="2" fill="currentColor" opacity="0.45" class="step-header__knob"/>
+                                            <?= install_lucide_paths('sliders-horizontal') ?>
                                         </svg>
                                     </div>
                                     <h2 class="step-title"><?= __('config.step_title') ?></h2>
@@ -1439,21 +1491,21 @@ $install_pill_tooltip = htmlspecialchars(
 						<div class="evo-install__actions" role="group" aria-label="<?= htmlspecialchars(__('install.nav_aria'), ENT_QUOTES, 'UTF-8') ?>">
 							<?php if ($cur_step > STEP_LANGUAGE): ?>
 							<button type="submit" name="step" value="<?= (int) ($cur_step - 1) ?>" class="evo-install__btn evo-install__btn--back">
-								<svg class="evo-install__btn-ico" width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+								<?= install_lucide_icon('chevron-left', ['class' => 'evo-install__btn-ico', 'width' => 20, 'height' => 20]) ?>
 								<span><?= __('buttons.previous') ?></span>
 							</button>
 							<?php endif; ?>
 							<?php if ($next_step <= max(array_keys($steps))): ?>
-							<button type="submit" name="step" value="<?= $next_step ?>" id="install-step-next" class="evo-install__btn evo-install__btn--next evo-install__btn--sm"<?= ($next_step >= STEP_CONFIG ? ' onclick="$(\'#form-content\').toggle();"' : '') ?>>
+							<button type="submit" name="step" value="<?= $next_step ?>" id="install-step-next" class="evo-install__btn evo-install__btn--next"<?= ($next_step >= STEP_CONFIG ? ' onclick="$(\'#form-content\').toggle();"' : '') ?>>
 								<span><?= __('buttons.next') ?></span>
-								<svg class="evo-install__btn-ico" width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+								<?= install_lucide_icon('chevron-right', ['class' => 'evo-install__btn-ico', 'width' => 20, 'height' => 20]) ?>
 							</button>
 							<?php endif; ?>
 						</div>
 						<?php elseif (isset($done) && $done): ?>
 						<div class="evo-install__actions evo-install__actions--solo">
 							<button type="submit" name="step" value="<?= STEP_CLEANUP ?>" class="evo-install__btn evo-install__btn--success evo-install__btn--block">
-								<svg class="evo-install__btn-ico" width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+								<?= install_lucide_icon('check', ['class' => 'evo-install__btn-ico', 'width' => 22, 'height' => 22, 'stroke-width' => '2.2']) ?>
 								<span><?= __('install.complete') ?></span>
 							</button>
 						</div>

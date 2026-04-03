@@ -18,6 +18,9 @@ define('PREG_ALPHA',     '#^[a-z]+$#i');
 define('PREG_URL',       '`^https?://[-A-Za-z0-9+&@/%?=~_#\.]+$`');
 define('PREG_NOT_EMPTY', '#^.+$#');
 
+/** Drapeaux SVG ISO 3166-1 (hampusborgos/country-flags). Copie locale : assets/country-flag/svg/{code}.svg */
+define('EVO_COUNTRY_FLAGS_SVG_BASE', 'https://cdn.jsdelivr.net/gh/hampusborgos/country-flags@main/svg/');
+
 define('MSG_NORMAL',       0);
 define('MSG_NOTIFICATION', 1);
 define('MSG_IMPORTANT',    2);
