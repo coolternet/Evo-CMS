@@ -305,6 +305,13 @@ switch($cur_step) {
 			$warning = "Type de base de données invalide: " . $_POST['db_type'];
 			break;
 		}
+
+		// Arrivée depuis l'étape précédente (ex. vérifications) : `step` pointe déjà vers cette étape
+		// mais le POST ne contient pas encore les champs DB — ne pas valider ni tenter la connexion.
+		if ($from_step !== STEP_DATABASE) {
+			$next_step = STEP_DATABASE;
+			break;
+		}
 		
 		// Validation des champs requis
 		$db_type = strtolower(trim($_POST['db_type']));
