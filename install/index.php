@@ -126,6 +126,21 @@ function install_lang_switch_url(string $locale): string {
 }
 
 /**
+ * SVG couleur marque pour la barre ETA (Facebook, GitHub). Sinon null → Lucide.
+ */
+function install_eta_brand_svg(?string $brand): ?string {
+	if ($brand === 'facebook') {
+		$path = 'M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z';
+		return '<svg class="evo-install__eta-ico evo-install__eta-ico--brand" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false"><path fill="#1877F2" d="' . $path . '"/></svg>';
+	}
+	if ($brand === 'github') {
+		$path = 'M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12';
+		return '<svg class="evo-install__eta-ico evo-install__eta-ico--brand" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false"><path fill="#ffffff" d="' . $path . '"/></svg>';
+	}
+	return null;
+}
+
+/**
  * Chemins internes des icônes Lucide (viewBox 0 0 24 24, stroke — lucide.dev).
  */
 function install_lucide_paths(string $name): string {
@@ -994,6 +1009,7 @@ $install_eta_links = [
 		'label' => 'Facebook',
 		'title' => 'Facebook',
 		'lucide' => 'facebook',
+		'brand' => 'facebook',
 	],
 	[
 		'href' => $install_eta_site_url,
@@ -1006,6 +1022,7 @@ $install_eta_links = [
 		'label' => 'GitHub',
 		'title' => 'GitHub',
 		'lucide' => 'github',
+		'brand' => 'github',
 	],
 ];
 
@@ -1119,8 +1136,17 @@ $install_pill_tooltip = htmlspecialchars(
                             $eta_href = $eta_link['href'];
                             $is_skype = str_starts_with($eta_href, 'skype:');
                             $eta_lucide = $eta_link['lucide'] ?? 'link';
+                            $eta_aria_esc = htmlspecialchars($eta_link['label'] ?? $eta_link['title'] ?? '', ENT_QUOTES, 'UTF-8');
+                            $eta_brand = isset($eta_link['brand']) ? (string) $eta_link['brand'] : '';
+                            $eta_brand_svg = $eta_brand !== '' ? install_eta_brand_svg($eta_brand) : null;
                             ?>
-                        <a class="evo-install__eta-social-link" href="<?= htmlspecialchars($eta_href, ENT_QUOTES, 'UTF-8') ?>" title="<?= htmlspecialchars($eta_link['title'], ENT_QUOTES, 'UTF-8') ?>"<?php if (!$is_skype): ?> target="_blank" rel="noopener noreferrer"<?php endif; ?>><?= install_lucide_icon($eta_lucide, ['class' => 'evo-install__eta-ico', 'width' => 16, 'height' => 16]) ?><span class="evo-install__eta-social-text"><?= htmlspecialchars($eta_link['label'], ENT_QUOTES, 'UTF-8') ?></span></a>
+                        <a class="evo-install__eta-social-link" href="<?= htmlspecialchars($eta_href, ENT_QUOTES, 'UTF-8') ?>" title="<?= htmlspecialchars($eta_link['title'], ENT_QUOTES, 'UTF-8') ?>" aria-label="<?= $eta_aria_esc ?>"<?php if (!$is_skype): ?> target="_blank" rel="noopener noreferrer"<?php endif; ?>><?php
+                            if ($eta_brand_svg !== null) {
+                                echo $eta_brand_svg;
+                            } else {
+                                echo install_lucide_icon($eta_lucide, ['class' => 'evo-install__eta-ico', 'width' => 16, 'height' => 16]);
+                            }
+                            ?></a>
                         <?php endforeach; ?>
                     </nav>
                     <?php endif; ?>
@@ -1141,7 +1167,7 @@ $install_pill_tooltip = htmlspecialchars(
                         <input type="hidden" name="language" value="<?= htmlspecialchars($install_locale, ENT_QUOTES, 'UTF-8') ?>">
                         
                         <?php if ($cur_step == STEP_LANGUAGE): ?>
-                            <div class="step-content evo-install-step evo-install-step--enter">
+                            <div class="step-content evo-install-step evo-install-step--enter evo-install-step--lang-text-only">
                                 <div class="step-header">
                                     <div class="step-header__art step-header__art--lang" aria-hidden="true">
                                         <?= install_lucide_icon('earth', ['class' => 'step-header__svg', 'width' => 72, 'height' => 72]) ?>
@@ -1541,6 +1567,104 @@ $install_pill_tooltip = htmlspecialchars(
             var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
             var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
                 return new bootstrap.Tooltip(tooltipTriggerEl);
+            });
+
+            var $formContent = $('#form-content');
+            if ($formContent.length) {
+                $formContent.on('submit', function (e) {
+                    var form = this;
+                    if (form.getAttribute('data-evo-install-navigating') === '1') {
+                        form.removeAttribute('data-evo-install-navigating');
+                        return;
+                    }
+                    if (e.isDefaultPrevented()) {
+                        return;
+                    }
+                    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                        return;
+                    }
+                    var oe = e.originalEvent;
+                    var sub = oe && oe.submitter ? oe.submitter : null;
+                    if (!sub && document.activeElement && document.activeElement.form === form) {
+                        var ae = document.activeElement;
+                        if (ae.matches && ae.matches('button[type="submit"]') && ae.getAttribute('name') === 'step') {
+                            sub = ae;
+                        }
+                    }
+                    if (!sub || sub.getAttribute('name') !== 'step') {
+                        return;
+                    }
+                    e.preventDefault();
+                    form.setAttribute('data-evo-install-navigating', '1');
+                    form.classList.add('evo-install-form--exit');
+                    var navDone = false;
+                    var fallbackMs = 450;
+                    var t = window.setTimeout(function () {
+                        finishNav();
+                    }, fallbackMs);
+                    function finishNav() {
+                        if (navDone) {
+                            return;
+                        }
+                        navDone = true;
+                        window.clearTimeout(t);
+                        form.removeEventListener('animationend', onAnimEnd);
+                        if (typeof form.requestSubmit === 'function') {
+                            form.requestSubmit(sub);
+                        } else {
+                            sub.click();
+                        }
+                    }
+                    function onAnimEnd(ev) {
+                        if (ev.target !== form) {
+                            return;
+                        }
+                        if ((ev.animationName || '').indexOf('evoFadeOut') === -1) {
+                            return;
+                        }
+                        finishNav();
+                    }
+                    form.addEventListener('animationend', onAnimEnd);
+                });
+            }
+
+            $(document).on('click', 'a.evo-install-lang-option', function (e) {
+                var href = this.getAttribute('href');
+                if (!href) {
+                    return;
+                }
+                if (document.body.getAttribute('data-evo-install-step') !== '0') {
+                    return;
+                }
+                if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                    return;
+                }
+                e.preventDefault();
+                if ($('body').data('evoLangSwitching')) {
+                    return;
+                }
+                $('body').data('evoLangSwitching', true);
+                var done = false;
+                var navigate = function () {
+                    if (done) {
+                        return;
+                    }
+                    done = true;
+                    window.location.href = href;
+                };
+                var fallbackMs = 400;
+                var t = window.setTimeout(navigate, fallbackMs);
+                document.body.classList.add('evo-install-lang-text--exit');
+                var onAnimEnd = function (ev) {
+                    var animName = ev.animationName || '';
+                    if (animName.indexOf('evoFadeOut') === -1) {
+                        return;
+                    }
+                    window.clearTimeout(t);
+                    document.body.removeEventListener('animationend', onAnimEnd);
+                    navigate();
+                };
+                document.body.addEventListener('animationend', onAnimEnd);
             });
         });
     </script>

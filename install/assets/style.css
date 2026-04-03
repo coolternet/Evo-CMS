@@ -25,6 +25,7 @@
     --evo-ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
     --system-background-secondary: rgba(30, 41, 59, 0.9);
     --system-label: var(--evo-ink);
+    --evo-install-zone-padding-y: 0.75rem;
 }
 
 @keyframes evoFadeInUp {
@@ -35,6 +36,24 @@
     to {
         opacity: 1;
         transform: translateY(0);
+    }
+}
+
+@keyframes evoFadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes evoFadeOut {
+    from {
+        opacity: 1;
+    }
+    to {
+        opacity: 0;
     }
 }
 
@@ -364,18 +383,23 @@ body.evo-install.evo-install--blocked {
 
 .evo-install__eta-social {
     display: flex;
-    flex-direction: column;
-    gap: 0.4rem;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: stretch;
+    justify-content: center;
+    gap: 0.35rem;
 }
 
 .evo-install__eta-social-link {
     display: inline-flex;
     flex-direction: row;
     align-items: center;
-    gap: 0.5rem;
-    width: 100%;
+    justify-content: center;
+    flex: 0 0 auto;
     box-sizing: border-box;
-    padding: 0.4rem 0.55rem;
+    width: 2.25rem;
+    height: 2.25rem;
+    padding: 0;
     font-size: 0.6875rem;
     font-weight: 600;
     line-height: 1.25;
@@ -392,15 +416,17 @@ body.evo-install.evo-install--blocked {
 
 .evo-install__eta-social-link .evo-install__eta-ico {
     flex-shrink: 0;
-    width: 1.1rem;
-    height: 1.1rem;
+    width: 1.15rem;
+    height: 1.15rem;
     color: var(--evo-accent);
     opacity: 0.95;
 }
 
-.evo-install__eta-social-text {
-    flex: 1;
-    min-width: 0;
+.evo-install__eta-social-link .evo-install__eta-ico--brand {
+    display: block;
+    width: 1.15rem;
+    height: 1.15rem;
+    color: transparent;
 }
 
 .evo-install__eta-social-link:hover {
@@ -411,6 +437,10 @@ body.evo-install.evo-install--blocked {
 
 .evo-install__eta-social-link:hover .evo-install__eta-ico {
     opacity: 1;
+}
+
+.evo-install__eta-social-link:hover .evo-install__eta-ico--brand {
+    opacity: 0.92;
 }
 
 .evo-install__eta-copyright {
@@ -607,10 +637,10 @@ body.evo-install.evo-install--blocked {
     font-size: 0.75rem;
     font-weight: 700;
     line-height: 1;
-    background: rgba(15, 23, 42, 0.9);
-    border: 2px solid rgba(226, 232, 240, 0.45);
+    background: transparent;
+    border: none;
     color: var(--evo-ink-muted);
-    transition: border-color 0.2s, background 0.2s, color 0.2s, box-shadow 0.2s, transform 0.15s ease;
+    transition: background 0.2s, color 0.2s, box-shadow 0.2s, transform 0.15s ease;
 }
 
 /* Icônes Lucide dans le fil (priorité sur Bootstrap / règles globales svg) */
@@ -627,27 +657,24 @@ body.evo-install.evo-install--blocked {
 }
 
 .evo-install__step.is-todo .evo-install__dot {
-    background: rgba(30, 41, 59, 0.6);
-    border-color: rgba(148, 163, 184, 0.35);
+    background: transparent;
 }
 
 .evo-install__step.is-active .evo-install__dot {
-    border-color: rgba(255, 255, 255, 0.65);
-    background: radial-gradient(circle at 30% 30%, var(--evo-active-amber) 0%, #d97706 100%);
-    color: #0f172a;
-    box-shadow: 0 0 0 4px var(--evo-active-amber-soft), 0 4px 14px rgba(245, 158, 11, 0.35);
-    animation: evoActivePulse 2.2s var(--evo-ease-out) infinite;
+    background: transparent;
+    color: var(--evo-active-amber);
+    box-shadow: none;
+    animation: none;
 }
 
 .evo-install__step.is-done .evo-install__dot {
-    border-color: #34d399;
-    background: linear-gradient(145deg, #059669 0%, #10b981 100%);
-    color: #fff;
+    background: transparent;
+    color: #34d399;
 }
 
 .evo-install__step.has-error.is-active .evo-install__dot {
-    border-color: var(--evo-danger);
-    background: var(--evo-danger);
+    background: transparent;
+    color: var(--evo-danger);
     box-shadow: 0 0 0 4px var(--evo-danger-soft);
 }
 
@@ -710,6 +737,26 @@ body.evo-install.evo-install--blocked {
     overflow-x: clip;
 }
 
+#form-content.evo-install__form {
+    animation: evoFadeIn 0.4s var(--evo-ease-out) both;
+    will-change: opacity;
+}
+
+body[data-evo-install-step="0"] #form-content.evo-install__form {
+    animation: none;
+    will-change: auto;
+}
+
+#form-content.evo-install-form--exit {
+    animation: evoFadeOut 0.3s ease-in forwards !important;
+    pointer-events: none;
+    will-change: opacity;
+}
+
+#form-content.evo-install__form .evo-install-step--enter {
+    animation: none !important;
+}
+
 .evo-install__form > *,
 #form-content.evo-install__form > * {
     max-width: 100%;
@@ -741,8 +788,12 @@ body.evo-install.evo-install--blocked {
 }
 
 .step-header {
+    margin: 0;
     margin-bottom: 1.75rem;
+    padding: var(--evo-install-zone-padding-y) 0;
+    padding-top: max(var(--evo-install-zone-padding-y), env(safe-area-inset-top, 0px));
     text-align: center;
+    box-sizing: border-box;
 }
 
 .step-header__art {
@@ -773,6 +824,32 @@ body.evo-install.evo-install--blocked {
     animation: evoFadeInUp 0.55s var(--evo-ease-out) both;
 }
 
+/* Étape langue : pas d’animation sur tout le bloc, uniquement sur les textes listés */
+body[data-evo-install-step="0"] .evo-install-step--lang-text-only.evo-install-step--enter {
+    animation: none !important;
+}
+
+body[data-evo-install-step="0"] .evo-install__progress .evo-install__step-label,
+body[data-evo-install-step="0"] .evo-install__subtitle,
+body[data-evo-install-step="0"] .evo-install__body .step-title,
+body[data-evo-install-step="0"] .evo-install__body .step-description,
+body[data-evo-install-step="0"] #install-step-next > span:first-of-type,
+body[data-evo-install-step="0"] .evo-install__eta-copyright {
+    animation: evoFadeIn 0.4s var(--evo-ease-out) both;
+    will-change: opacity;
+}
+
+body.evo-install-lang-text--exit[data-evo-install-step="0"] .evo-install__progress .evo-install__step-label,
+body.evo-install-lang-text--exit[data-evo-install-step="0"] .evo-install__subtitle,
+body.evo-install-lang-text--exit[data-evo-install-step="0"] .evo-install__body .step-title,
+body.evo-install-lang-text--exit[data-evo-install-step="0"] .evo-install__body .step-description,
+body.evo-install-lang-text--exit[data-evo-install-step="0"] #install-step-next > span:first-of-type,
+body.evo-install-lang-text--exit[data-evo-install-step="0"] .evo-install__eta-copyright {
+    animation: evoFadeOut 0.3s ease-in forwards !important;
+    pointer-events: none;
+    will-change: opacity;
+}
+
 @media (prefers-reduced-motion: reduce) {
     .step-header__art--check .step-header__draw {
         stroke-dashoffset: 0;
@@ -785,6 +862,21 @@ body.evo-install.evo-install--blocked {
 
     .evo-install-step--enter {
         animation: none;
+    }
+
+    #form-content.evo-install__form {
+        animation: none !important;
+        will-change: auto;
+    }
+
+    body[data-evo-install-step="0"] .evo-install__progress .evo-install__step-label,
+    body[data-evo-install-step="0"] .evo-install__subtitle,
+    body[data-evo-install-step="0"] .evo-install__body .step-title,
+    body[data-evo-install-step="0"] .evo-install__body .step-description,
+    body[data-evo-install-step="0"] #install-step-next > span:first-of-type,
+    body[data-evo-install-step="0"] .evo-install__eta-copyright {
+        animation: none !important;
+        opacity: 1;
     }
 }
 
@@ -1198,9 +1290,10 @@ body.evo-install.evo-install--blocked {
     position: sticky;
     bottom: 0;
     z-index: 2;
+    margin: 0;
     margin-top: auto;
-    /* Même espace haut / bas pour centrer visuellement le bouton dans la barre */
-    padding: 1rem 0 max(1rem, env(safe-area-inset-bottom, 0px));
+    padding: var(--evo-install-zone-padding-y) 0;
+    padding-bottom: max(var(--evo-install-zone-padding-y), env(safe-area-inset-bottom, 0px));
     border-top: 1px solid var(--evo-border);
     background: transparent;
     width: 100%;
@@ -1216,9 +1309,11 @@ body.evo-install.evo-install--blocked {
 
 .evo-install__actions--solo {
     justify-content: center;
-    padding: 1rem 0 max(1rem, env(safe-area-inset-bottom, 0px));
-    border-top: 1px solid var(--evo-border);
+    margin: 0;
     margin-top: auto;
+    padding: var(--evo-install-zone-padding-y) 0;
+    padding-bottom: max(var(--evo-install-zone-padding-y), env(safe-area-inset-bottom, 0px));
+    border-top: 1px solid var(--evo-border);
     box-sizing: border-box;
 }
 
