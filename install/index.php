@@ -1131,7 +1131,7 @@ $install_pill_tooltip = htmlspecialchars(
 
                 <div class="evo-install__panel">
                 <div class="evo-install__body">
-                    <form method="post" autocomplete="off" id="form-content" class="evo-install__form">
+                    <form method="post" autocomplete="off" id="form-content" class="evo-install__form container">
                         <?php if (!empty($warning)): ?>
                             <div class="alert alert-error">
                                 <?= $warning ?>
