@@ -177,7 +177,7 @@ if (!empty($_POST['language'])) {
 } elseif (!empty($_GET['lang'])) {
 	$requested_locale = trim((string) $_GET['lang']);
 }
-$install_locale = in_array($requested_locale, $install_locale_ids, true) ? $requested_locale : 'french';
+$install_locale = in_array($requested_locale, $install_locale_ids, true) ? $requested_locale : 'en';
 
 Evo\Lang::setTranslator(
 	new Evo\Translator($install_locale, ['english'], ROOT_DIR . '/includes/languages', 'install')
@@ -777,7 +777,7 @@ switch($cur_step) {
 					['name' => 'name', 'value' => post_e('name', '')],
 					['name' => 'email', 'value' => post_e('email', '')],
 					['name' => 'url', 'value' => post_e('url', '/')],
-					['name' => 'language', 'value' => post_e('language', 'french')],
+					['name' => 'language', 'value' => post_e('language', 'en')],
 					['name' => 'cookie.name', 'value' => 'evo_'.random_hash(8)],
 					['name' => 'database.version', 'value' => DATABASE_VERSION],
 					['name' => 'install.version', 'value' => EVO_VERSION],
