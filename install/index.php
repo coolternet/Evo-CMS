@@ -31,74 +31,13 @@ function post_e($key, $default = null) {
  */
 function install_locale_country_code(string $localeId): string {
 	static $map = [
-		'english' => 'GB',
 		'en' => 'GB',
-		'french' => 'FR',
 		'fr' => 'FR',
 		'it' => 'IT',
 		'es' => 'ES',
 		'du' => 'NL',
 		'ru' => 'RU',
 		'de' => 'DE',
-		'german' => 'DE',
-		'deutsch' => 'DE',
-		'spanish' => 'ES',
-		'italian' => 'IT',
-		'portuguese' => 'PT',
-		'brazilian' => 'BR',
-		'dutch' => 'NL',
-		'russian' => 'RU',
-		'polish' => 'PL',
-		'ukrainian' => 'UA',
-		'czech' => 'CZ',
-		'slovak' => 'SK',
-		'hungarian' => 'HU',
-		'romanian' => 'RO',
-		'bulgarian' => 'BG',
-		'greek' => 'GR',
-		'turkish' => 'TR',
-		'swedish' => 'SE',
-		'norwegian' => 'NO',
-		'danish' => 'DK',
-		'finnish' => 'FI',
-		'icelandic' => 'IS',
-		'irish' => 'IE',
-		'welsh' => 'GB',
-		'scottish' => 'GB',
-		'catalan' => 'ES',
-		'basque' => 'ES',
-		'japanese' => 'JP',
-		'chinese' => 'CN',
-		'korean' => 'KR',
-		'vietnamese' => 'VN',
-		'thai' => 'TH',
-		'indonesian' => 'ID',
-		'malay' => 'MY',
-		'hindi' => 'IN',
-		'bengali' => 'BD',
-		'arabic' => 'SA',
-		'hebrew' => 'IL',
-		'persian' => 'IR',
-		'urdu' => 'PK',
-		'punjabi' => 'IN',
-		'tamil' => 'IN',
-		'filipino' => 'PH',
-		'swahili' => 'KE',
-		'afrikaans' => 'ZA',
-		'latvian' => 'LV',
-		'lithuanian' => 'LT',
-		'estonian' => 'EE',
-		'slovenian' => 'SI',
-		'croatian' => 'HR',
-		'serbian' => 'RS',
-		'macedonian' => 'MK',
-		'albanian' => 'AL',
-		'georgian' => 'GE',
-		'armenian' => 'AM',
-		'azerbaijani' => 'AZ',
-		'kazakh' => 'KZ',
-		'uzbek' => 'UZ',
-		'mongolian' => 'MN',
 	];
 	$lc = strtolower($localeId);
 	if (isset($map[$lc])) {
@@ -1535,7 +1474,7 @@ $install_pill_tooltip = htmlspecialchars(
 						<?php if (empty($hide_nav)): ?>
 						<div class="evo-install__actions" role="group" aria-label="<?= htmlspecialchars(__('install.nav_aria'), ENT_QUOTES, 'UTF-8') ?>">
 							<?php if ($cur_step > STEP_LANGUAGE): ?>
-							<button type="submit" name="step" value="<?= (int) ($cur_step - 1) ?>" class="evo-install__btn evo-install__btn--back">
+							<button type="submit" name="step" value="<?= (int) ($cur_step - 1) ?>" class="evo-install__btn evo-install__btn--back" formnovalidate>
 								<?= install_lucide_icon('chevron-left', ['class' => 'evo-install__btn-ico', 'width' => 20, 'height' => 20]) ?>
 								<span><?= __('buttons.previous') ?></span>
 							</button>
