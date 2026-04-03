@@ -1,0 +1,67 @@
+# Met à jour EVO_BUILD et EVO_BUILDDATE dans includes/version.php à partir du commit courant.
+name: Update EVO build metadata
+
+on:
+  push:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: update-version-build-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  update-version-php:
+    if: ${{ github.event_name == 'workflow_dispatch' || (github.event.head_commit != null && !contains(github.event.head_commit.message, '[skip ci]')) }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Mettre à jour includes/version.php
+        run: |
+          export GIT_SHORT=$(git rev-parse --short HEAD)
+          export GIT_DATE=$(git log -1 --format=%cD)
+          python3 <<'PY'
+          import os
+          import re
+
+          def php_single_quoted(s: str) -> str:
+              return "'" + s.replace("\\", "\\\\").replace("'", "\\'") + "'"
+
+          path = "includes/version.php"
+          short = os.environ["GIT_SHORT"]
+          date = os.environ["GIT_DATE"]
+          with open(path, encoding="utf-8") as f:
+              content = f.read()
+          content = re.sub(
+              r"define\(\s*'EVO_BUILD'\s*,\s*'[^']*'\s*\)",
+              f"define('EVO_BUILD', {php_single_quoted(short)})",
+              content,
+              count=1,
+          )
+          content = re.sub(
+              r"define\(\s*'EVO_BUILDDATE'\s*,\s*'[^']*'\s*\)",
+              f"define('EVO_BUILDDATE', {php_single_quoted(date)})",
+              content,
+              count=1,
+          )
+          with open(path, "w", encoding="utf-8", newline="\n") as f:
+              f.write(content)
+          PY
+
+      - name: Commit et push si modification
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add includes/version.php
+          if git diff --staged --quiet; then
+            echo "Aucun changement dans includes/version.php."
+            exit 0
+          fi
+          git commit -m "chore: mettre à jour EVO_BUILD / EVO_BUILDDATE [skip ci]"
+          git push
