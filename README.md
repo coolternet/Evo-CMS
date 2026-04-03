@@ -343,6 +343,4 @@ Merci à tous les contributeurs qui participent au développement d'EvoCMS !
 
 ---
 
-*Fait avec ❤️ par l'équipe EvoCMS*
-
 </div>
