@@ -9,8 +9,9 @@
     --evo-accent-hover: #0ea5e9;
     --evo-accent-2: #818cf8;
     --evo-accent-soft: rgba(56, 189, 248, 0.14);
-    --evo-active-amber: #f59e0b;
-    --evo-active-amber-soft: rgba(245, 158, 11, 0.2);
+    /* Étape active, langue sélectionnée — aligné sur l’accent (plus d’ambre) */
+    --evo-active-accent: #38bdf8;
+    --evo-active-accent-soft: rgba(56, 189, 248, 0.22);
     --evo-success: #10b981;
     --evo-success-soft: rgba(16, 185, 129, 0.14);
     --evo-danger: #f87171;
@@ -26,6 +27,27 @@
     --system-background-secondary: rgba(30, 41, 59, 0.9);
     --system-label: var(--evo-ink);
     --evo-install-zone-padding-y: 0.75rem;
+    /* Halos couleur : 150 % du plus petit côté (dépasse le viewport pour un halo plus ample) */
+    --evo-ambient-glow-size: 150vmin;
+}
+
+/* Halos ambiants : couleurs animables (interpolation <color>) */
+@property --evo-ambient-a {
+    syntax: "<color>";
+    inherits: false;
+    initial-value: rgba(96, 165, 250, 0.52);
+}
+
+@property --evo-ambient-b {
+    syntax: "<color>";
+    inherits: false;
+    initial-value: rgba(37, 99, 235, 0.42);
+}
+
+@property --evo-ambient-c {
+    syntax: "<color>";
+    inherits: false;
+    initial-value: rgba(23, 37, 84, 0.46);
 }
 
 @keyframes evoFadeInUp {
@@ -72,10 +94,14 @@
 @keyframes evoActivePulse {
     0%,
     100% {
-        box-shadow: 0 0 0 4px var(--evo-active-amber-soft), 0 4px 14px rgba(245, 158, 11, 0.35);
+        box-shadow:
+            0 0 0 4px var(--evo-active-accent-soft),
+            0 4px 14px rgba(56, 189, 248, 0.35);
     }
     50% {
-        box-shadow: 0 0 0 6px rgba(245, 158, 11, 0.25), 0 6px 22px rgba(245, 158, 11, 0.45);
+        box-shadow:
+            0 0 0 6px rgba(56, 189, 248, 0.25),
+            0 6px 22px rgba(56, 189, 248, 0.45);
     }
 }
 
@@ -173,127 +199,166 @@ body.evo-install.evo-install--blocked {
     inset: 0;
     z-index: 0;
     pointer-events: none;
-    overflow: hidden;
+    /* visible : ne pas rogner le blur des halos ; hidden masquait les coins (focaux en 0%/100% 0%) */
+    overflow: visible;
 }
 
 .evo-install__ambient-base {
     position: absolute;
     inset: 0;
     background-color: #020617;
+    background-image: radial-gradient(
+        ellipse 65% 45% at 50% 45%,
+        rgba(15, 23, 42, 0.88) 0%,
+        transparent 72%
+    );
+}
+
+/* Quadrillage avec dégradé vers transparent (bords) */
+.evo-install__ambient-base::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
     background-image:
-        radial-gradient(ellipse 65% 45% at 50% 45%, rgba(15, 23, 42, 0.88) 0%, transparent 72%),
-        linear-gradient(to right, rgba(148, 163, 184, 0.09) 1px, transparent 1px),
-        linear-gradient(to bottom, rgba(148, 163, 184, 0.09) 1px, transparent 1px);
-    background-size: auto, 42px 42px, 42px 42px;
-    background-position: center, 0 0, 0 0;
+        linear-gradient(to right, rgba(148, 163, 184, 0.2) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(148, 163, 184, 0.2) 1px, transparent 1px);
+    background-size: 42px 42px;
+    background-position: 0 0;
+    -webkit-mask-image: radial-gradient(
+        ellipse 85% 72% at 50% 48%,
+        #000 0%,
+        #000 38%,
+        transparent 78%
+    );
+    mask-image: radial-gradient(
+        ellipse 85% 72% at 50% 48%,
+        #000 0%,
+        #000 38%,
+        transparent 78%
+    );
 }
 
 .evo-install__ambient-glow {
     position: absolute;
-    border-radius: 50%;
+    /* Pas de border-radius circulaire : avec un dégradé ancré au coin (0%/100% 0%), le clip
+       circulaire centré coupait toute la zone colorée (visible surtout sur grands viewports). */
+    border-radius: 0;
     will-change: filter, opacity, transform;
     transform-origin: 50% 40%;
+    --evo-ambient-a: rgba(96, 165, 250, 0.52);
+    --evo-ambient-b: rgba(37, 99, 235, 0.42);
+    --evo-ambient-c: rgba(23, 37, 84, 0.46);
 }
 
-/* Lumière bleue centrée en haut (sous les halos latéraux) */
+@keyframes evoAmbientGlowColors {
+    0%,
+    100% {
+        --evo-ambient-a: rgba(96, 165, 250, 0.52);
+        --evo-ambient-b: rgba(37, 99, 235, 0.42);
+        --evo-ambient-c: rgba(23, 37, 84, 0.46);
+    }
+    25% {
+        --evo-ambient-a: rgba(186, 230, 253, 0.72);
+        --evo-ambient-b: rgba(96, 165, 250, 0.55);
+        --evo-ambient-c: rgba(37, 99, 235, 0.52);
+    }
+    50% {
+        --evo-ambient-a: rgba(14, 165, 233, 0.58);
+        --evo-ambient-b: rgba(29, 78, 216, 0.48);
+        --evo-ambient-c: rgba(15, 23, 42, 0.62);
+    }
+    75% {
+        --evo-ambient-a: rgba(125, 211, 252, 0.68);
+        --evo-ambient-b: rgba(59, 130, 246, 0.52);
+        --evo-ambient-c: rgba(30, 41, 59, 0.5);
+    }
+}
+
+/* Même dégradé que le coin droit (bleu clair → bleu nuit) */
 .evo-install__ambient-glow--top {
-    top: -22%;
+    top: 0;
     left: 50%;
-    width: min(130vw, 1280px);
-    height: min(58vh, 560px);
+    width: var(--evo-ambient-glow-size);
+    height: var(--evo-ambient-glow-size);
     transform: translateX(-50%);
-    transform-origin: 50% 35%;
+    transform-origin: 50% 0%;
     background: radial-gradient(
-        ellipse 62% 52% at 50% 42%,
-        rgba(56, 189, 248, 0.42) 0%,
-        rgba(14, 165, 233, 0.26) 48%,
-        rgba(2, 132, 199, 0.1) 68%,
-        transparent 78%
+        ellipse 75% 75% at 50% 0%,
+        rgb(75 0 145) 0%,
+        var(--evo-ambient-b) 40%,
+        var(--evo-ambient-c) 60%,
+        transparent 100%
     );
-    filter: blur(58px) saturate(1.42);
-    animation: evoAmbientTopBlue 12s ease-in-out infinite;
+    filter: blur(58px) saturate(1.45);
+    animation:
+        evoAmbientTopBlue 11s cubic-bezier(0.45, 0, 0.55, 1) infinite,
+        evoAmbientGlowColors 15s cubic-bezier(0.45, 0, 0.55, 1) infinite;
 }
 
 @keyframes evoAmbientTopBlue {
     0%,
     100% {
-        filter: blur(58px) saturate(1.32) hue-rotate(-4deg);
-        opacity: 0.82;
+        opacity: 0.62;
+        transform: translateX(-50%) scale(0.86);
+        filter: blur(58px) saturate(1.2) brightness(1.22);
     }
     50% {
-        filter: blur(58px) saturate(1.58) hue-rotate(8deg);
         opacity: 1;
+        transform: translateX(-50%) scale(1.14);
+        filter: blur(58px) saturate(1.55) brightness(0.52);
     }
 }
 
 .evo-install__ambient-glow--tl {
-    top: -38%;
-    left: -32%;
-    width: min(120vw, 1100px);
-    height: min(100vh, 920px);
-    /* Palette néon : #01FFF4 → #FF1178 */
+    position: fixed;
+    inset: 0 auto auto 0;
+    width: var(--evo-ambient-glow-size);
+    height: var(--evo-ambient-glow-size);
+    transform-origin: 0% 0%;
     background: radial-gradient(
-        ellipse 58% 58% at 40% 36%,
-        rgba(1, 255, 244, 0.55) 0%,
-        rgba(255, 17, 120, 0.48) 42%,
-        transparent 78%
+        ellipse 75% 75% at 0% 0%,
+        rgb(75 0 145) 0%,
+        var(--evo-ambient-b) 40%,
+        var(--evo-ambient-c) 60%,
+        transparent 100%
     );
-    filter: blur(56px) saturate(1.5) hue-rotate(0deg);
+    filter: blur(60px) saturate(1.45);
     animation:
-        evoAmbientNeonFluo 14s ease-in-out infinite,
-        evoAmbientGlowPulse 7s ease-in-out infinite;
+        evoAmbientCornerBlueBR 11s cubic-bezier(0.45, 0, 0.55, 1) infinite,
+        evoAmbientGlowColors 15s cubic-bezier(0.45, 0, 0.55, 1) infinite;
 }
 
 .evo-install__ambient-glow--br {
-    top: -42%;
-    right: -34%;
-    bottom: auto;
-    left: auto;
-    width: min(125vw, 1150px);
-    height: min(105vh, 960px);
-    /* Palette néon : #FFF205 → #FE0000 → #7CFF01 */
+    position: fixed;
+    inset: 0 0 auto auto;
+    width: var(--evo-ambient-glow-size);
+    height: var(--evo-ambient-glow-size);
+    transform-origin: 100% 0%;
     background: radial-gradient(
-        ellipse 56% 56% at 60% 36%,
-        rgba(255, 242, 5, 0.52) 0%,
-        rgba(254, 0, 0, 0.36) 38%,
-        rgba(124, 255, 1, 0.42) 52%,
-        transparent 80%
+        ellipse 75% 75% at 100% 0%,
+        rgb(75 0 145) 0%,
+        var(--evo-ambient-b) 40%,
+        var(--evo-ambient-c) 60%,
+        transparent 100%
     );
-    filter: blur(60px) saturate(1.5) hue-rotate(0deg);
+    filter: blur(60px) saturate(1.45);
     animation:
-        evoAmbientNeonFluoBR 16s ease-in-out infinite reverse,
-        evoAmbientGlowPulse 8s ease-in-out infinite reverse;
+        evoAmbientCornerBlueBR 11s cubic-bezier(0.45, 0, 0.55, 1) infinite reverse,
+        evoAmbientGlowColors 15s cubic-bezier(0.45, 0, 0.55, 1) infinite reverse;
 }
 
-@keyframes evoAmbientNeonFluo {
+@keyframes evoAmbientCornerBlueBR {
     0%,
     100% {
-        filter: blur(56px) saturate(1.35) hue-rotate(-8deg);
-    }
-    50% {
-        filter: blur(56px) saturate(1.72) hue-rotate(14deg);
-    }
-}
-
-@keyframes evoAmbientNeonFluoBR {
-    0%,
-    100% {
-        filter: blur(60px) saturate(1.35) hue-rotate(-8deg);
-    }
-    50% {
-        filter: blur(60px) saturate(1.72) hue-rotate(14deg);
-    }
-}
-
-@keyframes evoAmbientGlowPulse {
-    0%,
-    100% {
-        opacity: 0.78;
-        transform: scale(0.93);
+        opacity: 0.62;
+        transform: scale(0.86);
+        filter: blur(60px) saturate(1.2) brightness(1.2);
     }
     50% {
         opacity: 1;
-        transform: scale(1.07);
+        transform: scale(1.14);
+        filter: blur(60px) saturate(1.55) brightness(0.52);
     }
 }
 
@@ -307,16 +372,18 @@ body.evo-install.evo-install--blocked {
     }
 
     .evo-install__ambient-glow--top {
-        filter: blur(58px) saturate(1.42) hue-rotate(0deg);
+        filter: blur(58px) saturate(1.45) brightness(1);
         transform: translateX(-50%);
     }
 
     .evo-install__ambient-glow--tl {
-        filter: blur(56px) saturate(1.5) hue-rotate(0deg);
+        filter: blur(60px) saturate(1.45) brightness(1);
+        transform: scale(1);
     }
 
     .evo-install__ambient-glow--br {
-        filter: blur(60px) saturate(1.5) hue-rotate(0deg);
+        filter: blur(60px) saturate(1.45) brightness(1);
+        transform: scale(1);
     }
 }
 
@@ -348,6 +415,9 @@ body.evo-install.evo-install--blocked {
     min-width: 0;
     width: 100%;
     border-radius: 5px;
+    /* Même style que .evo-install__sidebar (bordure accent) */
+    border: 1px solid rgba(56, 189, 248, 0.2);
+    box-sizing: border-box;
 }
 
 .evo-install__split-wrap .evo-install__main {
@@ -462,7 +532,7 @@ body.evo-install.evo-install--blocked {
 }
 
 .evo-install__card {
-    background: rgba(15, 23, 42, 0.4);
+    background: rgba(15, 23, 42, 0.75);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
     border-radius: 5px;
@@ -909,6 +979,11 @@ body.evo-install.evo-install--blocked {
     z-index: 1;
 }
 
+/* Étapes pas encore atteintes : plus discrètes que actif / terminé */
+.evo-install__step.is-todo {
+    opacity: 0.58;
+}
+
 .evo-install__step-nav {
     display: flex;
     flex-direction: row;
@@ -977,7 +1052,7 @@ body.evo-install.evo-install--blocked {
 
 .evo-install__step.is-active .evo-install__dot {
     background: transparent;
-    color: var(--evo-active-amber);
+    color: var(--evo-active-accent);
     box-shadow: none;
     animation: none;
 }
@@ -1012,8 +1087,8 @@ body.evo-install.evo-install--blocked {
 }
 
 .evo-install__step.is-active .evo-install__step-label {
-    color: var(--evo-active-amber);
-    text-shadow: 0 1px 12px rgba(245, 158, 11, 0.35);
+    color: var(--evo-active-accent);
+    text-shadow: 0 1px 12px rgba(56, 189, 248, 0.35);
 }
 
 .evo-install__step.is-done .evo-install__step-label {
@@ -1285,9 +1360,9 @@ body.evo-install-lang-text--exit[data-evo-install-step="0"] .evo-install__eta-co
 }
 
 .evo-install-lang-option.is-selected {
-    border-color: rgba(245, 158, 11, 0.65);
-    background: rgba(245, 158, 11, 0.1);
-    box-shadow: 0 0 0 1px rgba(245, 158, 11, 0.25);
+    border-color: rgba(56, 189, 248, 0.55);
+    background: rgba(56, 189, 248, 0.1);
+    box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.22);
 }
 
 .evo-install-lang-option__flag {
