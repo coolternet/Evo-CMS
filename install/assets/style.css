@@ -1186,13 +1186,18 @@ body[data-evo-install-step="0"] #form-content.evo-install__form {
     filter: drop-shadow(0 8px 20px rgba(37, 99, 235, 0.2));
 }
 
+/* Trait plus fin que stroke-width="2" (langue, acceptation, vérifs, base, config) */
+.step-header__art .step-header__svg {
+    stroke-width: 0.95;
+}
+
 .step-header__art--check .step-header__draw {
     stroke-dasharray: 32;
     stroke-dashoffset: 32;
     animation: evoDrawTick 0.9s var(--evo-ease-out) 0.2s forwards;
 }
 
-.step-header__art--cfg .step-header__knob {
+.step-header__art--cfg .step-header__svg {
     animation: evoPulseSoft 2.5s var(--evo-ease-out) infinite;
 }
 
@@ -1232,7 +1237,7 @@ body.evo-install-lang-text--exit[data-evo-install-step="0"] .evo-install__eta-co
         animation: none;
     }
 
-    .step-header__art--cfg .step-header__knob {
+    .step-header__art--cfg .step-header__svg {
         animation: none;
     }
 

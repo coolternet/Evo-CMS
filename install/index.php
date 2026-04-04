@@ -90,6 +90,7 @@ function install_lucide_paths(string $name): string {
 		'clipboard-check' => '<rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="m9 14 2 2 4-4"/>',
 		'database' => '<ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5V19A9 3 0 0 0 21 19V5"/><path d="M3 12A9 3 0 0 0 21 12"/>',
 		'sliders-horizontal' => '<line x1="21" x2="14" y1="4" y2="4"/><line x1="10" x2="3" y1="4" y2="4"/><line x1="21" x2="12" y1="12" y2="12"/><line x1="8" x2="3" y1="12" y2="12"/><line x1="21" x2="16" y1="20" y2="20"/><line x1="12" x2="3" y1="20" y2="20"/><line x1="14" x2="14" y1="4" y2="5"/><line x1="8" x2="8" y1="12" y2="13"/><line x1="16" x2="16" y1="20" y2="21"/>',
+		'settings' => '<path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.1a2 2 0 0 1-1-1.72v-.51a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/>',
 		'download' => '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/>',
 		'flag' => '<path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" x2="4" y1="22" y2="15"/>',
 		'facebook' => '<path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/>',
@@ -162,7 +163,7 @@ $install_step_dot_icons = [
 	STEP_ACCEPT   => 'file-text',
 	STEP_SYSCHECK => 'clipboard-check',
 	STEP_DATABASE => 'database',
-	STEP_CONFIG   => 'sliders-horizontal',
+	STEP_CONFIG   => 'settings',
 	STEP_INSTALL  => 'download',
 	STEP_CLEANUP  => 'flag',
 ];
@@ -306,7 +307,6 @@ switch($cur_step) {
 		$payload = [$_POST['db_host'], $_POST['db_user'], $_POST['db_pass'], $_POST['db_name'], $_POST['db_prefix'], $_POST['db_type']];
 
 		try {
-			require '../includes/Database/db.'.strtolower($_POST['db_type']).'.php';
 			$db_type = strtolower(trim($_POST['db_type']));
 			
 			if (empty($db_type)) {
@@ -319,14 +319,19 @@ switch($cur_step) {
 				throw new Exception("Fichier de base de données non trouvé: " . $db_file);
 			}
 			
-			require $db_file;
+			require_once $db_file;
 			
 			Db::Connect($_POST['db_host'], $_POST['db_user'], $_POST['db_pass'], $_POST['db_name'], $_POST['db_prefix']);
 
-			if (Db::TableExists('users')) {
+			$db_has_users = Db::TableExists('users');
+			if ($db_has_users) {
 				$warning = __('database.not_empty');
 			}
 			$next_step = STEP_CONFIG;
+			/* Afficher tout de suite l’étape config (sinon $cur_step reste 3 et un 2e clic « Suivant » est nécessaire). */
+			if (!$db_has_users) {
+				$cur_step = STEP_CONFIG;
+			}
 		} catch (Exception $e) {
 			$warning = "Erreur de connexion à la base de données: " . $e->getMessage();
 		}
@@ -361,7 +366,7 @@ switch($cur_step) {
 			$db = unserialize(base64_decode($_POST['payload']));
 			$_POST['url'] = trim($_POST['url'], '/');
 			try {
-				require '../includes/Database/db.'.strtolower($db[5]).'.php';
+				require_once '../includes/Database/db.'.strtolower($db[5]).'.php';
 
 				Db::Connect($db[0], $db[1], $db[2], $db[3], $db[4]);
 
@@ -993,6 +998,38 @@ $install_pill_tooltip = htmlspecialchars(
     <link href="<?= $__href_flags_css ?>" rel="stylesheet">
     <link href="<?= $__href_install_css ?>" rel="stylesheet">
     <script src="<?= $__href_vendor ?>"></script>
+    <script>
+    (function () {
+        try {
+            var k = 'evoInstallAmbientT0';
+            var raw = sessionStorage.getItem(k);
+            if (raw === null || raw === '') {
+                raw = String(Date.now());
+                sessionStorage.setItem(k, raw);
+            }
+            var t0 = parseInt(raw, 10);
+            if (isNaN(t0)) {
+                return;
+            }
+            var elapsed = (Date.now() - t0) / 1000;
+            if (elapsed < 0) {
+                return;
+            }
+            var d11 = -(elapsed % 11);
+            var d15 = -(elapsed % 15);
+            var st = document.createElement('style');
+            st.id = 'evo-install-ambient-sync';
+            st.textContent =
+                'body.evo-install .evo-install__ambient-glow--top,' +
+                'body.evo-install .evo-install__ambient-glow--tl,' +
+                'body.evo-install .evo-install__ambient-glow--br' +
+                '{animation-delay:' + d11 + 's,' + d15 + 's;}';
+            document.head.appendChild(st);
+        } catch (e) {
+            /* sessionStorage indisponible ou quota */
+        }
+    })();
+    </script>
 </head>
 <body class="evo-install<?= $cur_step < 0 ? ' evo-install--blocked' : '' ?><?= $cur_step >= 0 ? ' evo-install--has-sidebar' : '' ?>" data-evo-install-step="<?= (int) $cur_step ?>">
     <div class="evo-install__ambient" aria-hidden="true">
@@ -1374,8 +1411,7 @@ $install_pill_tooltip = htmlspecialchars(
                                 <div class="step-header">
                                     <div class="step-header__art step-header__art--cfg" aria-hidden="true">
                                         <svg class="step-header__svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                                            <circle cx="14" cy="4" r="2" fill="currentColor" opacity="0.45" class="step-header__knob"/>
-                                            <?= install_lucide_paths('sliders-horizontal') ?>
+                                            <?= install_lucide_paths('settings') ?>
                                         </svg>
                                     </div>
                                     <h2 class="step-title"><?= __('config.step_title') ?></h2>
