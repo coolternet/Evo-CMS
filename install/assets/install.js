@@ -119,8 +119,35 @@
         updateFormFields();
     }
 
+    function initThemeToggle() {
+        var btn = document.getElementById('evo-install-theme-toggle');
+        if (!btn) {
+            return;
+        }
+        var textEl = btn.querySelector('.evo-install__theme-toggle-text');
+        var labelLight = btn.getAttribute('data-evo-install-label-light') || '';
+        var labelDark = btn.getAttribute('data-evo-install-label-dark') || '';
+        function setLightMode(on) {
+            document.body.classList.toggle('evo-install--light', on);
+            btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+            if (textEl) {
+                textEl.textContent = on ? labelDark : labelLight;
+            }
+            try {
+                localStorage.setItem('evoInstallColorMode', on ? 'light' : 'dark');
+            } catch (e) {
+                /* quota / navigation privée */
+            }
+        }
+        setLightMode(document.body.classList.contains('evo-install--light'));
+        btn.addEventListener('click', function () {
+            setLightMode(!document.body.classList.contains('evo-install--light'));
+        });
+    }
+
     $(function () {
         initDatabaseStep();
+        initThemeToggle();
 
         var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
         tooltipTriggerList.map(function (tooltipTriggerEl) {

@@ -194,6 +194,220 @@ body.evo-install.evo-install--blocked {
     --evo-ink: #e8edf5;
 }
 
+/* —— Mode clair (bouton dans le fil d’étapes + localStorage) —— */
+body.evo-install.evo-install--light {
+    --evo-ink: #0f172a;
+    --evo-ink-muted: #64748b;
+    --evo-surface: rgba(255, 255, 255, 0.92);
+    --evo-surface-2: rgba(248, 250, 252, 0.98);
+    --evo-border: rgba(15, 23, 42, 0.12);
+    --evo-accent: #0284c7;
+    --evo-accent-hover: #0369a1;
+    --evo-accent-2: #4f46e5;
+    --evo-accent-soft: rgba(14, 165, 233, 0.14);
+    --evo-active-accent: #0284c7;
+    --evo-active-accent-soft: rgba(14, 165, 233, 0.2);
+    --evo-success: #059669;
+    --evo-success-soft: rgba(16, 185, 129, 0.12);
+    --evo-danger: #dc2626;
+    --evo-danger-soft: rgba(254, 202, 202, 0.65);
+    --evo-warn: #d97706;
+    --evo-shadow: 0 8px 28px rgba(15, 23, 42, 0.07);
+    --evo-shadow-lg: 0 20px 48px rgba(15, 23, 42, 0.09);
+    --system-background-secondary: rgba(241, 245, 249, 0.98);
+    --system-label: var(--evo-ink);
+    color: var(--evo-ink);
+    background: #f8fafc;
+}
+
+body.evo-install.evo-install--light.evo-install--blocked {
+    --evo-ink: #0f172a;
+}
+
+body.evo-install.evo-install--light .evo-install__ambient {
+    opacity: 0.42;
+}
+
+body.evo-install.evo-install--light .evo-install__ambient-base {
+    background-color: #f1f5f9;
+    background-image: radial-gradient(
+        ellipse 65% 45% at 50% 45%,
+        rgba(255, 255, 255, 0.92) 0%,
+        transparent 72%
+    );
+}
+
+body.evo-install.evo-install--light .evo-install__ambient-base::before {
+    background-image:
+        linear-gradient(to right, rgba(15, 23, 42, 0.06) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(15, 23, 42, 0.06) 1px, transparent 1px);
+}
+
+body.evo-install.evo-install--light .evo-install__card {
+    background: rgba(255, 255, 255, 0.97);
+    box-shadow: var(--evo-shadow), 0 0 0 1px rgba(15, 23, 42, 0.06) inset;
+}
+
+body.evo-install.evo-install--light .evo-install__sidebar {
+    background: linear-gradient(165deg, #f8fafc 0%, #f1f5f9 100%);
+    border-right-color: rgba(2, 132, 199, 0.16);
+}
+
+body.evo-install.evo-install--light .evo-install__panel {
+    background: rgba(248, 250, 252, 0.88);
+}
+
+body.evo-install.evo-install--light .evo-install__pill {
+    border-color: rgba(2, 132, 199, 0.22);
+}
+
+body.evo-install.evo-install--light .evo-install__eta-social-link {
+    background: rgba(255, 255, 255, 0.9);
+    border-color: rgba(15, 23, 42, 0.1);
+}
+
+body.evo-install.evo-install--light .evo-install__eta-social-link:hover {
+    background: rgba(241, 245, 249, 0.98);
+    border-color: rgba(2, 132, 199, 0.32);
+    color: var(--evo-accent);
+}
+
+body.evo-install.evo-install--light .evo-install__eta-social-link .evo-install__eta-ico--brand-github path {
+    fill: #0f172a;
+}
+
+body.evo-install.evo-install--light .db-alert.alert-info {
+    color: #0c4a6e;
+    background: linear-gradient(
+        145deg,
+        rgba(14, 165, 233, 0.1) 0%,
+        rgba(255, 255, 255, 0.98) 45%,
+        rgba(241, 245, 249, 0.95) 100%
+    );
+    border-color: rgba(2, 132, 199, 0.3);
+}
+
+body.evo-install.evo-install--light .alert-error {
+    color: #991b1b;
+    border-color: rgba(220, 38, 38, 0.28);
+}
+
+body.evo-install.evo-install--light .alert-success {
+    color: #166534;
+    border-color: rgba(22, 163, 74, 0.3);
+}
+
+body.evo-install.evo-install--light .alert-info:not(.db-alert) {
+    color: #0c4a6e;
+    border-color: rgba(2, 132, 199, 0.28);
+}
+
+body.evo-install.evo-install--light .evo-install__step.is-done .evo-install__step-label {
+    color: #059669;
+}
+
+body.evo-install.evo-install--light .evo-install__step.is-active .evo-install__step-label {
+    text-shadow: 0 1px 8px rgba(2, 132, 199, 0.22);
+}
+
+body.evo-install.evo-install--light .evo-install__dot--stacked .evo-install__dot-check {
+    color: #059669;
+}
+
+body.evo-install.evo-install--light .evo-install__dot--stacked .evo-install__check {
+    filter: drop-shadow(0 0 2px rgba(2, 132, 199, 0.35));
+}
+
+body.evo-install.evo-install--light .evo-install__card .card-header.evo-install__card-header {
+    background: rgba(241, 245, 249, 0.98);
+    border-bottom-color: var(--evo-border);
+}
+
+body.evo-install.evo-install--light .check-item {
+    background: rgba(255, 255, 255, 0.9);
+    border-color: rgba(15, 23, 42, 0.1);
+}
+
+body.evo-install.evo-install--light .check-item.success {
+    border-color: rgba(5, 150, 105, 0.28);
+}
+
+body.evo-install.evo-install--light .check-item.error {
+    border-color: rgba(220, 38, 38, 0.28);
+}
+
+body.evo-install.evo-install--light .check-status {
+    background: rgba(226, 232, 240, 0.95);
+    color: var(--evo-ink-muted);
+}
+
+body.evo-install.evo-install--light .form-control,
+body.evo-install.evo-install--light .form-select {
+    color: var(--evo-ink);
+    border-color: rgba(15, 23, 42, 0.12);
+}
+
+body.evo-install.evo-install--light .form-control {
+    background-color: rgba(255, 255, 255, 0.98);
+}
+
+body.evo-install.evo-install--light .form-control::placeholder {
+    color: var(--evo-ink-muted);
+}
+
+body.evo-install.evo-install--light .evo-install-lang-option {
+    background: rgba(255, 255, 255, 0.95);
+    border-color: rgba(15, 23, 42, 0.1);
+}
+
+body.evo-install.evo-install--light .evo-install-lang-option:hover {
+    border-color: rgba(2, 132, 199, 0.35);
+    background: rgba(241, 245, 249, 0.98);
+}
+
+body.evo-install.evo-install--light .evo-install-lang-option.is-selected {
+    border-color: rgba(2, 132, 199, 0.4);
+    background: rgba(14, 165, 233, 0.1);
+    box-shadow: 0 0 0 1px rgba(2, 132, 199, 0.18);
+}
+
+body.evo-install.evo-install--light .step-title {
+    text-shadow: 0 1px 2px rgba(15, 23, 42, 0.05);
+}
+
+body.evo-install.evo-install--light .evo-install-acceptance__text {
+    scrollbar-color: rgba(2, 132, 199, 0.4) rgba(226, 232, 240, 0.95);
+}
+
+body.evo-install.evo-install--light .evo-install-acceptance__text::-webkit-scrollbar-track {
+    background: rgba(226, 232, 240, 0.95);
+}
+
+body.evo-install.evo-install--light .evo-install__btn--back {
+    background: rgba(255, 255, 255, 0.95);
+    border-color: rgba(15, 23, 42, 0.12);
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.05);
+}
+
+body.evo-install.evo-install--light .evo-install__btn--back:hover {
+    background: rgba(241, 245, 249, 0.98);
+    border-color: rgba(2, 132, 199, 0.3);
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.06);
+}
+
+body.evo-install.evo-install--light .evo-install__btn--next {
+    box-shadow: 0 4px 18px rgba(2, 132, 199, 0.28);
+}
+
+body.evo-install.evo-install--light .evo-install__btn--next.evo-install__btn--sm {
+    box-shadow: 0 2px 10px rgba(2, 132, 199, 0.22);
+}
+
+body.evo-install.evo-install--light.evo-install--blocked .evo-install__card {
+    border-color: rgba(217, 119, 6, 0.42);
+    box-shadow: var(--evo-shadow), 0 0 0 1px rgba(251, 191, 36, 0.2);
+}
+
 .evo-install__ambient {
     position: fixed;
     inset: 0;
@@ -362,6 +576,34 @@ body.evo-install.evo-install--blocked {
     }
 }
 
+@keyframes evoAmbientGlowGrayLight {
+    0%,
+    100% {
+        opacity: 0.52;
+        transform: translateX(-50%) scale(0.88);
+        filter: blur(58px) saturate(0.1) brightness(0.98);
+    }
+    50% {
+        opacity: 0.88;
+        transform: translateX(-50%) scale(1.1);
+        filter: blur(58px) saturate(0.22) brightness(0.82);
+    }
+}
+
+@keyframes evoAmbientCornerGrayLight {
+    0%,
+    100% {
+        opacity: 0.52;
+        transform: scale(0.88);
+        filter: blur(60px) saturate(0.1) brightness(0.98);
+    }
+    50% {
+        opacity: 0.88;
+        transform: scale(1.1);
+        filter: blur(60px) saturate(0.22) brightness(0.82);
+    }
+}
+
 @media (prefers-reduced-motion: reduce) {
     .evo-install__ambient-glow--top,
     .evo-install__ambient-glow--tl,
@@ -383,6 +625,77 @@ body.evo-install.evo-install--blocked {
 
     .evo-install__ambient-glow--br {
         filter: blur(60px) saturate(1.45) brightness(1);
+        transform: scale(1);
+    }
+}
+
+/* Mode clair : halos ambiants en gris (sans violet / cycle bleu) */
+body.evo-install.evo-install--light .evo-install__ambient-glow--top {
+    background: radial-gradient(
+        ellipse 75% 75% at 50% 0%,
+        rgba(203, 213, 225, 0.88) 0%,
+        rgba(148, 163, 184, 0.5) 40%,
+        rgba(100, 116, 139, 0.38) 60%,
+        transparent 100%
+    );
+    filter: blur(58px) saturate(0.18) brightness(0.96);
+}
+
+body.evo-install.evo-install--light .evo-install__ambient-glow--tl {
+    background: radial-gradient(
+        ellipse 75% 75% at 0% 0%,
+        rgba(203, 213, 225, 0.88) 0%,
+        rgba(148, 163, 184, 0.5) 40%,
+        rgba(100, 116, 139, 0.38) 60%,
+        transparent 100%
+    );
+    filter: blur(60px) saturate(0.18) brightness(0.96);
+}
+
+body.evo-install.evo-install--light .evo-install__ambient-glow--br {
+    background: radial-gradient(
+        ellipse 75% 75% at 100% 0%,
+        rgba(203, 213, 225, 0.88) 0%,
+        rgba(148, 163, 184, 0.5) 40%,
+        rgba(100, 116, 139, 0.38) 60%,
+        transparent 100%
+    );
+    filter: blur(60px) saturate(0.18) brightness(0.96);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    body.evo-install.evo-install--light .evo-install__ambient-glow--top {
+        animation: evoAmbientGlowGrayLight 11s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+    }
+
+    body.evo-install.evo-install--light .evo-install__ambient-glow--tl {
+        animation: evoAmbientCornerGrayLight 11s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+    }
+
+    body.evo-install.evo-install--light .evo-install__ambient-glow--br {
+        animation: evoAmbientCornerGrayLight 11s cubic-bezier(0.45, 0, 0.55, 1) infinite reverse;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    body.evo-install.evo-install--light .evo-install__ambient-glow--top,
+    body.evo-install.evo-install--light .evo-install__ambient-glow--tl,
+    body.evo-install.evo-install--light .evo-install__ambient-glow--br {
+        animation: none !important;
+    }
+
+    body.evo-install.evo-install--light .evo-install__ambient-glow--top {
+        filter: blur(58px) saturate(0.2) brightness(1);
+        transform: translateX(-50%);
+    }
+
+    body.evo-install.evo-install--light .evo-install__ambient-glow--tl {
+        filter: blur(60px) saturate(0.2) brightness(1);
+        transform: scale(1);
+    }
+
+    body.evo-install.evo-install--light .evo-install__ambient-glow--br {
+        filter: blur(60px) saturate(0.2) brightness(1);
         transform: scale(1);
     }
 }
@@ -1016,6 +1329,66 @@ body.evo-install.evo-install--blocked {
     overflow: visible;
 }
 
+.evo-install__progress--sidebar .evo-install__steps {
+    flex: 1 1 auto;
+    min-height: 0;
+}
+
+.evo-install__progress-footer {
+    flex-shrink: 0;
+    margin-top: auto;
+    padding-top: 1rem;
+    border-top: 1px solid var(--evo-border);
+}
+
+.evo-install__theme-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    margin: 0;
+    padding: 0.5rem 0.65rem;
+    font: inherit;
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--evo-ink-muted);
+    background: rgba(2, 6, 23, 0.35);
+    border: 1px solid var(--evo-border);
+    border-radius: 5px;
+    cursor: pointer;
+    transition:
+        color 0.15s,
+        border-color 0.15s,
+        background 0.15s;
+}
+
+body.evo-install.evo-install--light .evo-install__theme-toggle {
+    background: rgba(255, 255, 255, 0.92);
+    border-color: rgba(15, 23, 42, 0.12);
+}
+
+.evo-install__theme-toggle:hover {
+    color: var(--evo-accent);
+    border-color: rgba(56, 189, 248, 0.35);
+    background: rgba(30, 41, 59, 0.55);
+}
+
+body.evo-install.evo-install--light .evo-install__theme-toggle:hover {
+    background: rgba(241, 245, 249, 0.98);
+    border-color: rgba(2, 132, 199, 0.32);
+}
+
+.evo-install__theme-toggle:focus-visible {
+    outline: 2px solid var(--evo-accent);
+    outline-offset: 2px;
+}
+
+.evo-install__theme-toggle-text {
+    pointer-events: none;
+}
+
 .evo-install__steps {
     display: flex;
     flex-direction: column;
@@ -1552,7 +1925,8 @@ body.evo-install-lang-text--exit[data-evo-install-step="0"] #install-step-next >
     font-size: 0.9375rem;
     font-family: inherit;
     color: var(--evo-ink);
-    background: rgba(15, 23, 42, 0.65);
+    /* background-color seulement : le shorthand `background` réinitialise l’icône du .form-select */
+    background-color: rgba(15, 23, 42, 0.65);
     border: 1px solid var(--evo-border);
     border-radius: var(--evo-radius-sm);
     transition: border-color 0.15s, box-shadow 0.15s;
@@ -1571,11 +1945,34 @@ body.evo-install-lang-text--exit[data-evo-install-step="0"] #install-step-next >
 
 .form-select {
     cursor: pointer;
+    -webkit-appearance: none;
     appearance: none;
     background-color: rgba(15, 23, 42, 0.65);
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
     background-repeat: no-repeat;
     background-position: right 0.75rem center;
+    background-size: 12px 12px;
+    padding-right: 2rem;
+    line-height: 1.4;
+}
+
+/* Priorité sur Bootstrap (variables --bs-form-select-* / double fond) */
+.evo-install__form .form-select {
+    background-color: rgba(15, 23, 42, 0.65);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    background-size: 12px 12px;
+    padding-right: 2rem;
+    color: var(--evo-ink);
+}
+
+body.evo-install.evo-install--light .evo-install__form .form-select {
+    background-color: rgba(255, 255, 255, 0.98);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    background-size: 12px 12px;
     padding-right: 2rem;
 }
 
