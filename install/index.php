@@ -198,8 +198,8 @@ foreach ($install_locale_ids as $_lid) {
 }
 asort($install_language_options, SORT_NATURAL | SORT_FLAG_CASE);
 $html_lang_map = [
-	'english' => 'en',
-	'french' => 'fr',
+	'en' => 'en',
+	'fr' => 'fr',
 	'it' => 'it',
 	'es' => 'es',
 	'du' => 'nl',
@@ -271,7 +271,7 @@ switch($cur_step) {
 		}
 		
 		if (!isset($db_types[$_POST['db_type']])) {
-			$warning = "Type de base de données invalide: " . $_POST['db_type'];
+			$warning = __('database.invalid_type', ['%type%' => htmlspecialchars((string) $_POST['db_type'], ENT_QUOTES, 'UTF-8')]);
 			break;
 		}
 
@@ -286,20 +286,21 @@ switch($cur_step) {
 		$db_type = strtolower(trim($_POST['db_type']));
 		if ($db_type === 'mysql') {
 			if (empty($_POST['db_host'])) {
-				$warning = "L'hôte MySQL est requis";
+				$warning = __('database.mysql_host_required');
 				break;
 			}
 			if (empty($_POST['db_user'])) {
-				$warning = "L'utilisateur MySQL est requis";
+				$warning = __('database.mysql_user_required');
 				break;
 			}
 			if (empty($_POST['db_name'])) {
-				$warning = "Le nom de la base de données MySQL est requis";
+				$warning = __('database.mysql_name_required');
 				break;
 			}
 		} else if ($db_type === 'sqlite') {
 			if (empty($_POST['db_name'])) {
-				$warning = "Le nom de la base de données SQLite est requis (valeur reçue: '" . (isset($_POST['db_name']) ? $_POST['db_name'] : 'NOT SET') . "')";
+				$recv = isset($_POST['db_name']) ? (string) $_POST['db_name'] : __('database.value_not_set');
+				$warning = __('database.sqlite_name_required', ['%value%' => htmlspecialchars($recv, ENT_QUOTES, 'UTF-8')]);
 				break;
 			}
 		}
@@ -310,13 +311,13 @@ switch($cur_step) {
 			$db_type = strtolower(trim($_POST['db_type']));
 			
 			if (empty($db_type)) {
-				throw new Exception("Type de base de données non spécifié");
+				throw new Exception(__('database.type_not_specified'));
 			}
 			
 			$db_file = '../includes/Database/db.' . $db_type . '.php';
 			
 			if (!file_exists($db_file)) {
-				throw new Exception("Fichier de base de données non trouvé: " . $db_file);
+				throw new Exception(__('database.file_not_found', ['%path%' => $db_file]));
 			}
 			
 			require_once $db_file;
@@ -333,7 +334,7 @@ switch($cur_step) {
 				$cur_step = STEP_CONFIG;
 			}
 		} catch (Exception $e) {
-			$warning = "Erreur de connexion à la base de données: " . $e->getMessage();
+			$warning = __('database.connection_error', ['%message%' => $e->getMessage()]);
 		}
 		break;
 
@@ -359,7 +360,7 @@ switch($cur_step) {
 
 				if ($warning) break;
 			} catch (Exception $e) {
-				$warning = "Erreur de validation: " . $e->getMessage();
+				$warning = __('config.validation_error', ['%message%' => $e->getMessage()]);
 				break;
 			}
 
@@ -869,24 +870,24 @@ switch($cur_step) {
 
 				$done = true;
 			} catch (Exception $e) {
-				$failed  = 'Erreur SQL: ' . $e->getMessage() . '<br>';
-				$failed .= 'Requete: '. end(Db::$queries)['query'];
+				$failed  = __('install.sql_error', ['%message%' => $e->getMessage()]) . '<br>';
+				$failed .= __('install.sql_query') . ' ' . end(Db::$queries)['query'];
 			}
 
 			if (isset($_POST['report']) && EVO_REPORT_EMAIL) {
-				$status = isset($done) ? 'Réussie' : 'Échouée:';
-				$report = "Rapport d'installation du " . date('Y-m-d H:i:s') . ":\n\n".
-						  "Status:      $status $failed\n".
-						  "Database:    ". Db::DriverName() . ' ' . Db::ServerVersion() . "\n" .
-						  "Version CMS: " . EVO_VERSION . " - " . EVO_BUILD . "\n" .
-						  "Version PHP: " . PHP_VERSION . "\n" .
-						  "Serveur Web: " . $_SERVER['SERVER_SOFTWARE'] . "\n" .
+				$status = isset($done) ? __('install.report_status_ok') : __('install.report_status_fail');
+				$report = __('install.report_intro', ['%datetime%' => date('Y-m-d H:i:s')]) . "\n\n" .
+						  __('install.report_label_status') . ' ' . $status . ' ' . $failed . "\n" .
+						  __('install.report_label_database') . ' ' . Db::DriverName() . ' ' . Db::ServerVersion() . "\n" .
+						  __('install.report_label_cms') . ' ' . EVO_VERSION . ' - ' . EVO_BUILD . "\n" .
+						  __('install.report_label_php') . ' ' . PHP_VERSION . "\n" .
+						  __('install.report_label_server') . ' ' . ($_SERVER['SERVER_SOFTWARE'] ?? '') . "\n" .
 						  "\n" .
-						  "URL du CMS:  " . $_POST['url'] . "\n" .
-						  "Email admin: " . $_POST['email'] . "\n" .
-						  "User Agent:  " . $_SERVER['HTTP_USER_AGENT'];
+						  __('install.report_label_url') . ' ' . $_POST['url'] . "\n" .
+						  __('install.report_label_email') . ' ' . $_POST['email'] . "\n" .
+						  __('install.report_label_user_agent') . ' ' . ($_SERVER['HTTP_USER_AGENT'] ?? '');
 
-				@mail(EVO_REPORT_EMAIL, 'Rapport d\'installation', mb_convert_encoding($report, 'ISO-8859-1', 'UTF-8'));
+				@mail(EVO_REPORT_EMAIL, __('install.report_mail_subject'), mb_convert_encoding($report, 'ISO-8859-1', 'UTF-8'));
 			}
 		}
 		break;
@@ -900,7 +901,7 @@ switch($cur_step) {
 }
 
 } catch (Exception $e) {
-	$warning = "Erreur lors de l'installation: " . $e->getMessage();
+	$warning = __('install.error', ['%message%' => $e->getMessage()]);
 	$cur_step = STEP_CONFIG; // Revenir à l'étape de configuration
 }
 
@@ -943,6 +944,7 @@ $__href_bootstrap = htmlspecialchars($__evo_assets . '/assets/css/bootstrap.min.
 $__href_vendor = htmlspecialchars($__evo_assets . '/assets/js/vendor.js', ENT_QUOTES, 'UTF-8');
 $__href_install_css = htmlspecialchars($__install_uri . '/assets/style.css', ENT_QUOTES, 'UTF-8');
 $__href_flags_css = htmlspecialchars($__install_uri . '/assets/flags.css', ENT_QUOTES, 'UTF-8');
+$__href_install_js = htmlspecialchars($__install_uri . '/assets/install.js', ENT_QUOTES, 'UTF-8');
 
 /** Liens par défaut du projet (Evolution-Network) — barre latérale installation */
 $install_eta_site_url = 'http://www.evolution-network.ca';
@@ -950,21 +952,21 @@ $install_eta_github_repo = 'https://github.com/coolternet/Evo-CMS';
 $install_eta_links = [
 	[
 		'href' => 'https://www.facebook.com/profile.php?id=100064090205432',
-		'label' => 'Facebook',
-		'title' => 'Facebook',
+		'label' => __('install.link_facebook'),
+		'title' => __('install.link_facebook'),
 		'lucide' => 'facebook',
 		'brand' => 'facebook',
 	],
 	[
 		'href' => $install_eta_site_url,
-		'label' => 'Site Web',
-		'title' => 'Evolution-Network',
+		'label' => __('install.link_website'),
+		'title' => __('install.link_site_title'),
 		'lucide' => 'globe',
 	],
 	[
 		'href' => $install_eta_github_repo,
-		'label' => 'GitHub',
-		'title' => 'GitHub',
+		'label' => __('install.link_github'),
+		'title' => __('install.link_github'),
 		'lucide' => 'github',
 		'brand' => 'github',
 	],
@@ -998,40 +1000,8 @@ $install_pill_tooltip = htmlspecialchars(
     <link href="<?= $__href_flags_css ?>" rel="stylesheet">
     <link href="<?= $__href_install_css ?>" rel="stylesheet">
     <script src="<?= $__href_vendor ?>"></script>
-    <script>
-    (function () {
-        try {
-            var k = 'evoInstallAmbientT0';
-            var raw = sessionStorage.getItem(k);
-            if (raw === null || raw === '') {
-                raw = String(Date.now());
-                sessionStorage.setItem(k, raw);
-            }
-            var t0 = parseInt(raw, 10);
-            if (isNaN(t0)) {
-                return;
-            }
-            var elapsed = (Date.now() - t0) / 1000;
-            if (elapsed < 0) {
-                return;
-            }
-            var d11 = -(elapsed % 11);
-            var d15 = -(elapsed % 15);
-            var st = document.createElement('style');
-            st.id = 'evo-install-ambient-sync';
-            st.textContent =
-                'body.evo-install .evo-install__ambient-glow--top,' +
-                'body.evo-install .evo-install__ambient-glow--tl,' +
-                'body.evo-install .evo-install__ambient-glow--br' +
-                '{animation-delay:' + d11 + 's,' + d15 + 's;}';
-            document.head.appendChild(st);
-        } catch (e) {
-            /* sessionStorage indisponible ou quota */
-        }
-    })();
-    </script>
 </head>
-<body class="evo-install<?= $cur_step < 0 ? ' evo-install--blocked' : '' ?><?= $cur_step >= 0 ? ' evo-install--has-sidebar' : '' ?>" data-evo-install-step="<?= (int) $cur_step ?>">
+<body class="evo-install<?= $cur_step < 0 ? ' evo-install--blocked' : '' ?><?= $cur_step >= 0 ? ' evo-install--has-sidebar' : '' ?>" data-evo-install-step="<?= (int) $cur_step ?>" data-evo-install-js-alert-mysql="<?= htmlspecialchars(__('install.alert_mysql_fields'), ENT_QUOTES, 'UTF-8') ?>" data-evo-install-js-alert-sqlite="<?= htmlspecialchars(__('install.alert_sqlite_name'), ENT_QUOTES, 'UTF-8') ?>">
     <div class="evo-install__ambient" aria-hidden="true">
         <div class="evo-install__ambient-base"></div>
         <div class="evo-install__ambient-glow evo-install__ambient-glow--top"></div>
@@ -1296,100 +1266,6 @@ $install_pill_tooltip = htmlspecialchars(
                                     </div>
                                 </div>
                             </div>
-                                
-							<script>
-								$(function() {
-									function updateFormFields() {
-										var selectedType = $('#type').val();
-										var container = $('.db-fields-container');
-										var alert = $('.db-alert');
-										
-										// Synchroniser le champ caché
-										$('#db_type_backup').val(selectedType);
-										
-										// Cacher tous les champs de base de données
-										$('.db-field').hide();
-										$('.' + selectedType).show();
-										
-										// Gérer le layout des colonnes
-										if (selectedType == 'mysql') {
-											container.addClass('mysql-layout');
-											alert.hide(); // Masquer l'alerte pour MySQL
-										} else {
-											container.removeClass('mysql-layout');
-											alert.show(); // Afficher l'alerte pour SQLite
-										}
-										
-										if (selectedType == 'sqlite') {
-											// Générer un nom de base de données unique côté client seulement si vide
-											if (!$('#dbname').val()) {
-												var randomId = Math.random().toString(36).substr(2, 6);
-												$('#dbname').val('db-' + randomId + '.sqlite');
-											}
-											$('#prefixe').val('');
-										} else {
-											if (selectedType == 'mysql') {
-												$('#dbname').val('');
-												$('#prefixe').val('evo_');
-											}
-										}
-									}
-									
-									// Intercepter la soumission du formulaire
-									$('#form-content').on('submit', function(e) {
-										var selectedType = $('#type').val();
-										
-										// S'assurer que le nom de base de données est généré pour SQLite
-										if (selectedType == 'sqlite' && !$('#dbname').val()) {
-											var randomId = Math.random().toString(36).substr(2, 6);
-											$('#dbname').val('db-' + randomId + '.sqlite');
-										}
-										
-										// Validation des champs requis
-										if (selectedType == 'mysql') {
-											var host = $('#host').val().trim();
-											var user = $('#username').val().trim();
-											var dbname = $('#dbname').val().trim();
-											
-											if (!host || !user || !dbname) {
-												e.preventDefault();
-												alert('Veuillez remplir tous les champs requis pour MySQL (Host, Utilisateur, Nom de la base de données)');
-												return false;
-											}
-										} else if (selectedType == 'sqlite') {
-											var dbname = $('#dbname').val().trim();
-											console.log('SQLite dbname value:', dbname);
-											if (!dbname) {
-												e.preventDefault();
-												alert('Veuillez remplir le nom de la base de données SQLite');
-												return false;
-											}
-										}
-										
-										// S'assurer que tous les champs nécessaires sont visibles avant soumission
-										$('.db-field').hide();
-										$('.' + selectedType).show();
-										
-										// Forcer la visibilité des champs requis
-										if (selectedType == 'mysql') {
-											$('.mysql').show();
-										} else {
-											$('.sqlite').show();
-										}
-										
-										// Synchroniser le champ caché
-										$('#db_type_backup').val(selectedType);
-										
-										console.log('Form submitted with type:', selectedType);
-										console.log('Visible fields:', $('.db-field:visible').length);
-									});
-									
-									$('#type').bind('change blur keyup', updateFormFields);
-									
-									// Initialiser les champs au chargement de la page
-									updateFormFields();
-								});
-							</script>
                         <?php elseif ($cur_step == STEP_CONFIG): ?>
                             <?php
 								$scheme = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on' ? 'https' : 'http';
@@ -1432,7 +1308,7 @@ $install_pill_tooltip = htmlspecialchars(
                                         
                                         <div class="mb-3">
                                             <label class="form-label" for="sitemail"><?= __('config.siteemail') ?></label>
-                                            <input type="email" class="form-control" id="sitemail" name="email" placeholder="example@domain.com" value="<?= post_e('email') ?>">
+                                            <input type="email" class="form-control" id="sitemail" name="email" placeholder="<?= htmlspecialchars(__('config.email_placeholder'), ENT_QUOTES, 'UTF-8') ?>" value="<?= post_e('email') ?>">
                                         </div>
                                     </div>
                                     <div class="col-md-6">
@@ -1547,198 +1423,6 @@ $install_pill_tooltip = htmlspecialchars(
         </div>
         <?php endif; ?>
     </div>
-    <script>
-        $(function() {
-            // Initialize Bootstrap 5 tooltips
-            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-                return new bootstrap.Tooltip(tooltipTriggerEl);
-            });
-
-            var $formContent = $('#form-content');
-            if ($formContent.length) {
-                $formContent.on('submit', function (e) {
-                    var form = this;
-                    if (form.getAttribute('data-evo-install-navigating') === '1') {
-                        form.removeAttribute('data-evo-install-navigating');
-                        return;
-                    }
-                    if (e.isDefaultPrevented()) {
-                        return;
-                    }
-                    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-                        return;
-                    }
-                    var oe = e.originalEvent;
-                    var sub = oe && oe.submitter ? oe.submitter : null;
-                    if (!sub && document.activeElement && document.activeElement.form === form) {
-                        var ae = document.activeElement;
-                        if (ae.matches && ae.matches('button[type="submit"]') && ae.getAttribute('name') === 'step') {
-                            sub = ae;
-                        }
-                    }
-                    if (!sub || sub.getAttribute('name') !== 'step') {
-                        return;
-                    }
-                    e.preventDefault();
-                    form.setAttribute('data-evo-install-navigating', '1');
-                    form.classList.add('evo-install-form--exit');
-                    var navDone = false;
-                    var fallbackMs = 450;
-                    var t = window.setTimeout(function () {
-                        finishNav();
-                    }, fallbackMs);
-                    function finishNav() {
-                        if (navDone) {
-                            return;
-                        }
-                        navDone = true;
-                        window.clearTimeout(t);
-                        form.removeEventListener('animationend', onAnimEnd);
-                        if (typeof form.requestSubmit === 'function') {
-                            form.requestSubmit(sub);
-                        } else {
-                            sub.click();
-                        }
-                    }
-                    function onAnimEnd(ev) {
-                        if (ev.target !== form) {
-                            return;
-                        }
-                        if ((ev.animationName || '').indexOf('evoFadeOut') === -1) {
-                            return;
-                        }
-                        finishNav();
-                    }
-                    form.addEventListener('animationend', onAnimEnd);
-                });
-            }
-
-            (function () {
-                var toggle = document.getElementById('evo-install-nav-toggle');
-                var backdrop = document.getElementById('evo-install-sidebar-backdrop');
-                var closeBtn = document.getElementById('evo-install-sidebar-close');
-                if (!toggle || !backdrop) {
-                    return;
-                }
-                var $body = $('body');
-                var mq = window.matchMedia('(max-width: 1024px)');
-
-                function openLabel() {
-                    return toggle.getAttribute('data-evo-install-label-open') || '';
-                }
-
-                function closeLabel() {
-                    return toggle.getAttribute('data-evo-install-label-close') || '';
-                }
-
-                function setNavOpen(open) {
-                    if (open) {
-                        $body.addClass('evo-install--nav-open');
-                        toggle.setAttribute('aria-expanded', 'true');
-                        toggle.setAttribute('aria-label', closeLabel());
-                        backdrop.setAttribute('aria-hidden', 'false');
-                        var menuIcon = toggle.querySelector('.evo-install__nav-toggle-icon--menu');
-                        var closeIcon = toggle.querySelector('.evo-install__nav-toggle-icon--close');
-                        if (menuIcon) {
-                            menuIcon.setAttribute('hidden', 'hidden');
-                        }
-                        if (closeIcon) {
-                            closeIcon.removeAttribute('hidden');
-                        }
-                        document.body.style.overflow = 'hidden';
-                    } else {
-                        $body.removeClass('evo-install--nav-open');
-                        toggle.setAttribute('aria-expanded', 'false');
-                        toggle.setAttribute('aria-label', openLabel());
-                        backdrop.setAttribute('aria-hidden', 'true');
-                        var menuIcon2 = toggle.querySelector('.evo-install__nav-toggle-icon--menu');
-                        var closeIcon2 = toggle.querySelector('.evo-install__nav-toggle-icon--close');
-                        if (menuIcon2) {
-                            menuIcon2.removeAttribute('hidden');
-                        }
-                        if (closeIcon2) {
-                            closeIcon2.setAttribute('hidden', 'hidden');
-                        }
-                        document.body.style.overflow = '';
-                    }
-                }
-
-                function onToggleClick() {
-                    if (!mq.matches) {
-                        return;
-                    }
-                    setNavOpen(!$body.hasClass('evo-install--nav-open'));
-                }
-
-                toggle.addEventListener('click', onToggleClick);
-                backdrop.addEventListener('click', function () {
-                    setNavOpen(false);
-                });
-                if (closeBtn) {
-                    closeBtn.addEventListener('click', function () {
-                        setNavOpen(false);
-                    });
-                }
-                document.addEventListener('keydown', function (e) {
-                    if (e.key !== 'Escape') {
-                        return;
-                    }
-                    if ($body.hasClass('evo-install--nav-open')) {
-                        setNavOpen(false);
-                    }
-                });
-                window.addEventListener('resize', function () {
-                    if (!mq.matches) {
-                        setNavOpen(false);
-                    }
-                });
-                $(document).on('click', '#evo-install-sidebar .evo-install__step-nav', function () {
-                    if (mq.matches) {
-                        setNavOpen(false);
-                    }
-                });
-            })();
-
-            $(document).on('click', 'a.evo-install-lang-option', function (e) {
-                var href = this.getAttribute('href');
-                if (!href) {
-                    return;
-                }
-                if (document.body.getAttribute('data-evo-install-step') !== '0') {
-                    return;
-                }
-                if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-                    return;
-                }
-                e.preventDefault();
-                if ($('body').data('evoLangSwitching')) {
-                    return;
-                }
-                $('body').data('evoLangSwitching', true);
-                var done = false;
-                var navigate = function () {
-                    if (done) {
-                        return;
-                    }
-                    done = true;
-                    window.location.href = href;
-                };
-                var fallbackMs = 400;
-                var t = window.setTimeout(navigate, fallbackMs);
-                document.body.classList.add('evo-install-lang-text--exit');
-                var onAnimEnd = function (ev) {
-                    var animName = ev.animationName || '';
-                    if (animName.indexOf('evoFadeOut') === -1) {
-                        return;
-                    }
-                    window.clearTimeout(t);
-                    document.body.removeEventListener('animationend', onAnimEnd);
-                    navigate();
-                };
-                document.body.addEventListener('animationend', onAnimEnd);
-            });
-        });
-    </script>
+    <script src="<?= $__href_install_js ?>"></script>
 </body>
 </html>
