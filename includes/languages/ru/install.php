@@ -16,7 +16,7 @@ return [
 	'install.subtitle' => 'Настройка и установка',
 	'install.nav_aria' => 'Установка',
 	'install.social_nav_aria' => 'Ссылки на сообщество и соцсети Evo-CMS',
-	'install.copyright' => "© %year% Evolution-Network\nВсе права защищены.",
+	'install.copyright' => "Evo-CMS © %year% Evolution-Network\nВсе права защищены.",
 	'install.nav_open_menu' => 'Открыть меню шагов установки',
 	'install.nav_close_menu' => 'Закрыть меню шагов установки',
 	'install.eta' => 'Настройка займёт примерно %min% мин.',

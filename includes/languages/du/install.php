@@ -16,7 +16,7 @@ return [
 	'install.subtitle' => 'Setup en installatie',
 	'install.nav_aria' => 'Installatie',
 	'install.social_nav_aria' => 'Evo-CMS-community- en sociallinks',
-	'install.copyright' => "© %year% door Evolution-Network\nAlle rechten voorbehouden.",
+	'install.copyright' => "Evo-CMS © %year% door Evolution-Network\nAlle rechten voorbehouden.",
 	'install.nav_open_menu' => 'Installatiestappenmenu openen',
 	'install.nav_close_menu' => 'Installatiestappenmenu sluiten',
 	'install.eta' => 'De installatie duurt ongeveer %min% minuten.',

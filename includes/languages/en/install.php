@@ -16,7 +16,7 @@ return [
 	'install.subtitle' => 'Setup and installation',
 	'install.nav_aria' => 'Installation',
 	'install.social_nav_aria' => 'Evo-CMS community and social links',
-	'install.copyright' => "© %year% by Evolution-Network\nAll rights reserved.",
+	'install.copyright' => "Evo-CMS © %year% by Evolution-Network\nAll rights reserved.",
 	'install.nav_open_menu' => 'Open installation steps menu',
 	'install.nav_close_menu' => 'Close installation steps menu',
 	'install.eta' => 'Setup will complete in approximately %min% minutes.',

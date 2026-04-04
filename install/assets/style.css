@@ -700,7 +700,7 @@ body.evo-install.evo-install--blocked {
     line-height: 1.4;
     color: var(--evo-ink-muted);
     opacity: 0.88;
-    white-space: normal;
+    white-space: pre-line;
     text-align: center;
 }
 
@@ -1317,8 +1317,7 @@ body[data-evo-install-step="0"] .evo-install__progress .evo-install__step-label,
 body[data-evo-install-step="0"] .evo-install__subtitle,
 body[data-evo-install-step="0"] .evo-install__panel .step-title,
 body[data-evo-install-step="0"] .evo-install__panel .step-description,
-body[data-evo-install-step="0"] #install-step-next > span:first-of-type,
-body[data-evo-install-step="0"] .evo-install__eta-copyright {
+body[data-evo-install-step="0"] #install-step-next > span:first-of-type {
     animation: evoFadeIn 0.4s var(--evo-ease-out) both;
     will-change: opacity;
 }
@@ -1327,8 +1326,7 @@ body.evo-install-lang-text--exit[data-evo-install-step="0"] .evo-install__progre
 body.evo-install-lang-text--exit[data-evo-install-step="0"] .evo-install__subtitle,
 body.evo-install-lang-text--exit[data-evo-install-step="0"] .evo-install__panel .step-title,
 body.evo-install-lang-text--exit[data-evo-install-step="0"] .evo-install__panel .step-description,
-body.evo-install-lang-text--exit[data-evo-install-step="0"] #install-step-next > span:first-of-type,
-body.evo-install-lang-text--exit[data-evo-install-step="0"] .evo-install__eta-copyright {
+body.evo-install-lang-text--exit[data-evo-install-step="0"] #install-step-next > span:first-of-type {
     animation: evoFadeOut 0.3s ease-in forwards !important;
     pointer-events: none;
     will-change: opacity;
@@ -1357,8 +1355,7 @@ body.evo-install-lang-text--exit[data-evo-install-step="0"] .evo-install__eta-co
     body[data-evo-install-step="0"] .evo-install__subtitle,
     body[data-evo-install-step="0"] .evo-install__panel .step-title,
     body[data-evo-install-step="0"] .evo-install__panel .step-description,
-    body[data-evo-install-step="0"] #install-step-next > span:first-of-type,
-    body[data-evo-install-step="0"] .evo-install__eta-copyright {
+    body[data-evo-install-step="0"] #install-step-next > span:first-of-type {
         animation: none !important;
         opacity: 1;
     }

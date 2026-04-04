@@ -16,7 +16,7 @@ return [
 	'install.subtitle' => 'Configuration et installation',
 	'install.nav_aria' => 'Installation',
 	'install.social_nav_aria' => 'Réseaux sociaux et liens communautaires Evo-CMS',
-	'install.copyright' => "© %year% par Evolution-Network\nTous droits réservés.",
+	'install.copyright' => "Evo-CMS © %year% par Evolution-Network\nTous droits réservés.",
 	'install.nav_open_menu' => 'Ouvrir le menu des étapes d\'installation',
 	'install.nav_close_menu' => 'Fermer le menu des étapes d\'installation',
 	'install.eta' => 'L\'assistant se terminera dans environ %min% minutes.',
