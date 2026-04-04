@@ -405,7 +405,7 @@ body.evo-install.evo-install--blocked {
     padding-bottom: max(clamp(1rem, 4vw, 2rem), env(safe-area-inset-bottom, 0px));
 }
 
-/* Sidebar + zone principale (desktop : rangée ; mobile : tiroir) */
+/* Sidebar + zone principale (desktop : colonne étapes ; mobile : étapes sous l’en-tête d’étape) */
 .evo-install__split-wrap {
     display: flex;
     flex: 1;
@@ -477,50 +477,6 @@ body.evo-install.evo-install--blocked {
     font-variant-numeric: tabular-nums;
 }
 
-/* Bouton menu (étapes) — visible tablette / mobile uniquement */
-.evo-install__nav-toggle {
-    display: none;
-    flex-shrink: 0;
-    align-items: center;
-    justify-content: center;
-    width: 2.75rem;
-    height: 2.75rem;
-    margin: 0;
-    padding: 0;
-    border: 1px solid var(--evo-border);
-    border-radius: var(--evo-radius-sm);
-    background: rgba(2, 6, 23, 0.45);
-    color: var(--evo-ink);
-    cursor: pointer;
-    transition:
-        background 0.15s,
-        border-color 0.15s,
-        color 0.15s;
-}
-
-.evo-install__nav-toggle:hover {
-    background: rgba(30, 41, 59, 0.55);
-    border-color: rgba(56, 189, 248, 0.35);
-    color: var(--evo-accent);
-}
-
-.evo-install__nav-toggle:focus-visible {
-    outline: 2px solid var(--evo-accent);
-    outline-offset: 2px;
-}
-
-.evo-install__nav-toggle-icon--close[hidden] {
-    display: none !important;
-}
-
-.evo-install__sidebar-backdrop {
-    display: none;
-}
-
-.evo-install__sidebar-head {
-    display: none;
-}
-
 /* —— Carte principale —— */
 .evo-install__main {
     flex: 1;
@@ -551,6 +507,98 @@ body.evo-install.evo-install--blocked {
     flex-direction: column;
     align-items: stretch;
     min-height: min(78vh, 900px);
+}
+
+/* Masqué tablette + desktop ; visible uniquement téléphone (voir max-width: 767px) */
+.evo-install__card .card-header.evo-install__card-header {
+    display: none;
+    flex-direction: row;
+    align-items: center;
+    gap: 0.65rem;
+    flex-shrink: 0;
+    margin-bottom: 0;
+    padding: 0.75rem clamp(1.25rem, 4vw, 2rem);
+    background: rgba(30, 41, 59, 0.55);
+    border: none;
+    border-bottom: 1px solid var(--evo-border);
+    border-radius: 0;
+    color: var(--evo-ink);
+}
+
+@media (max-width: 767px) {
+    .evo-install__card .card-header.evo-install__card-header {
+        display: flex;
+        padding-left: clamp(1rem, 3vw, 1.5rem);
+        padding-right: clamp(1rem, 3vw, 1.5rem);
+    }
+
+    /* Étape langue : en-tête détaillé masqué (titre repris dans le card-header mobile) */
+    .evo-install-step--lang-text-only > .step-header {
+        display: none;
+    }
+
+    /* Étape vérifications système : même logique (card-header mobile) */
+    .evo-install-step--checks > .step-header {
+        display: none;
+    }
+
+    /* Étape avertissement / acceptation : même logique */
+    .evo-install-step--accept > .step-header {
+        display: none;
+    }
+
+    /* Étapes base de données + configuration site : même logique (card-header mobile) */
+    body[data-evo-install-step="3"] #form-content.evo-install__form .evo-install-step--enter > .step-header,
+    body[data-evo-install-step="4"] #form-content.evo-install__form .evo-install-step--enter > .step-header {
+        display: none;
+    }
+
+    /* Centrage vertical (langue, vérifs) dans la zone formulaire quand l’espace le permet */
+    #form-content.evo-install__form .evo-install-step--lang-text-only,
+    #form-content.evo-install__form .evo-install-step--checks {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        min-height: 0;
+    }
+}
+
+.evo-install__card-header-icon {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--evo-accent);
+}
+
+.evo-install__card-header-icon .evo-install__card-header-svg {
+    display: block;
+    vertical-align: middle;
+}
+
+.evo-install__card-header-text {
+    flex: 1 1 auto;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+}
+
+.evo-install__card-header-title {
+    margin: 0;
+    font-size: 1.0625rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.3;
+    color: var(--evo-ink);
+}
+
+.evo-install__card-header-subtitle {
+    margin: 0;
+    font-size: 0.75rem;
+    font-weight: 500;
+    line-height: 1.35;
+    color: var(--evo-ink-muted);
 }
 
 .evo-install__sidebar {
@@ -652,7 +700,7 @@ body.evo-install.evo-install--blocked {
     line-height: 1.4;
     color: var(--evo-ink-muted);
     opacity: 0.88;
-    white-space: pre-line;
+    white-space: normal;
     text-align: center;
 }
 
@@ -692,15 +740,7 @@ body.evo-install.evo-install--blocked {
         overflow: hidden;
     }
 
-    .evo-install__nav-toggle {
-        display: none !important;
-    }
-
-    .evo-install__sidebar-backdrop {
-        display: none !important;
-    }
-
-    .evo-install__sidebar-head {
+    .evo-install__eta--mobile {
         display: none !important;
     }
 
@@ -734,10 +774,6 @@ body.evo-install.evo-install--blocked {
     .evo-install--blocked .evo-install__split-wrap .evo-install__card--split {
         box-shadow: none;
     }
-
-    body.evo-install--nav-open {
-        overflow: unset !important;
-    }
 }
 
 @media (max-width: 1024px) {
@@ -747,43 +783,13 @@ body.evo-install.evo-install--blocked {
         min-height: 0;
     }
 
-    .evo-install__nav-toggle {
-        display: inline-flex;
+    .evo-install__sidebar--desktop {
+        display: none !important;
     }
 
     .evo-install__brand {
         flex: 1;
         min-width: 0;
-    }
-
-    .evo-install__header {
-        position: relative;
-        z-index: 1002;
-    }
-
-    .evo-install__sidebar-backdrop {
-        display: block;
-        position: fixed;
-        inset: 0;
-        z-index: 1000;
-        margin: 0;
-        padding: 0;
-        border: none;
-        background: rgba(2, 6, 23, 0.72);
-        backdrop-filter: blur(5px);
-        -webkit-backdrop-filter: blur(5px);
-        opacity: 0;
-        visibility: hidden;
-        pointer-events: none;
-        transition:
-            opacity 0.22s var(--evo-ease-out),
-            visibility 0.22s;
-    }
-
-    body.evo-install--nav-open .evo-install__sidebar-backdrop {
-        opacity: 1;
-        visibility: visible;
-        pointer-events: auto;
     }
 
     .evo-install__card--split {
@@ -792,88 +798,14 @@ body.evo-install.evo-install--blocked {
         overflow: visible;
     }
 
-    .evo-install__sidebar {
-        flex: none;
-        position: fixed;
-        top: 0;
-        left: 0;
-        bottom: 0;
-        width: min(280px, 88vw);
-        max-width: 100%;
-        height: 100dvh;
-        max-height: 100dvh;
-        margin: 0;
-        padding: 0 0 env(safe-area-inset-bottom, 0);
-        border-right: 1px solid rgba(56, 189, 248, 0.2);
-        border-bottom: none;
-        border-radius: 0;
-        z-index: 1001;
-        transform: translate3d(-100%, 0, 0);
-        transition: transform 0.28s var(--evo-ease-out);
-        overflow-x: hidden;
-        overflow-y: auto;
-        -webkit-overflow-scrolling: touch;
-        overscroll-behavior: contain;
-        box-shadow: 8px 0 36px rgba(0, 0, 0, 0.4);
-    }
-
-    body.evo-install--nav-open .evo-install__sidebar {
-        transform: translate3d(0, 0, 0);
-    }
-
-    .evo-install__sidebar-head {
-        display: flex;
-        flex-shrink: 0;
-        align-items: center;
-        justify-content: flex-end;
-        padding: 0.65rem 0.65rem 0.35rem;
-        padding-top: max(0.65rem, env(safe-area-inset-top, 0px));
-        border-bottom: 1px solid var(--evo-border);
-    }
-
-    .evo-install__sidebar-close {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        width: 2.5rem;
-        height: 2.5rem;
-        margin: 0;
-        padding: 0;
-        border: 1px solid transparent;
-        border-radius: var(--evo-radius-sm);
-        background: transparent;
-        color: var(--evo-ink-muted);
-        cursor: pointer;
-        transition:
-            color 0.15s,
-            background 0.15s,
-            border-color 0.15s;
-    }
-
-    .evo-install__sidebar-close:hover {
-        color: var(--evo-ink);
-        background: rgba(2, 6, 23, 0.35);
-        border-color: var(--evo-border);
-    }
-
-    .evo-install__sidebar-close:focus-visible {
-        outline: 2px solid var(--evo-accent);
-        outline-offset: 2px;
-    }
-
-    .evo-install__sidebar .evo-install__progress {
-        align-self: stretch;
+    .evo-install__eta--mobile {
+        margin-top: 1.5rem;
+        padding-top: 1.25rem;
+        border-top: 1px solid var(--evo-border);
         width: 100%;
         max-width: 100%;
-        margin-top: 0.5rem;
-        margin-left: 0;
-        padding: 0 1rem;
-    }
-
-    .evo-install__sidebar .evo-install__eta {
-        padding-left: 1rem;
-        padding-right: 1rem;
-        padding-bottom: max(1.25rem, env(safe-area-inset-bottom, 0px));
+        align-self: stretch;
+        box-sizing: border-box;
     }
 
     .evo-install__frame {
@@ -882,10 +814,31 @@ body.evo-install.evo-install--blocked {
         padding-right: max(1rem, env(safe-area-inset-right, 0px));
         padding-top: max(1rem, env(safe-area-inset-top, 0px));
         padding-bottom: max(1rem, env(safe-area-inset-bottom, 0px));
+        /* Ne pas dépasser la hauteur visible (évite un cadre plus haut que l’écran sur mobile) */
+        max-height: 100vh;
+        max-height: 100dvh;
+        overflow-y: auto;
+        overscroll-behavior-y: contain;
+        -webkit-overflow-scrolling: touch;
     }
 
     .evo-install__panel {
         padding: clamp(1rem, 3vw, 1.5rem);
+        align-items: stretch;
+    }
+
+    .evo-install__form.container {
+        width: 100%;
+        max-width: 100%;
+    }
+
+    /* Permet le scroll horizontal du fil d’étapes (clip sur form / step-content) */
+    #form-content.evo-install__form {
+        overflow-x: visible;
+    }
+
+    .step-content {
+        overflow-x: visible;
     }
 
     .step-header {
@@ -896,30 +849,128 @@ body.evo-install.evo-install--blocked {
         width: 64px;
         height: 64px;
     }
-}
 
-@media (max-width: 1024px) and (prefers-reduced-motion: reduce) {
-    .evo-install__sidebar {
-        transition: none;
+    /*
+     * Étape acceptation (tablette / mobile) : la zone de disclaimer occupe la hauteur utile
+     * (évite le vide entre le texte, la case à cocher et les boutons).
+     */
+    body[data-evo-install-step="1"] .evo-install__split-wrap .evo-install__main {
+        min-height: 0;
     }
 
-    .evo-install__sidebar-backdrop {
-        transition: none;
+    body[data-evo-install-step="1"] .evo-install__card {
+        min-height: 0;
+    }
+
+    body[data-evo-install-step="1"] .evo-install__card--split {
+        min-height: 0;
+        flex: 1 1 auto;
+        overflow: hidden;
+    }
+
+    body[data-evo-install-step="1"] .evo-install__panel {
+        flex: 1 1 auto;
+        min-height: 0;
+        overflow: hidden;
+    }
+
+    body[data-evo-install-step="1"] #form-content.evo-install__form {
+        flex: 1 1 auto;
+        min-height: 0;
+        overflow: hidden;
+        overflow-x: clip;
+        align-self: stretch;
+    }
+
+    body[data-evo-install-step="1"] #form-content.evo-install__form .evo-install-step--accept {
+        display: flex;
+        flex-direction: column;
+        flex: 1 1 auto;
+        min-height: 0;
+        align-self: stretch;
+    }
+
+    body[data-evo-install-step="1"] #form-content.evo-install__form .evo-install-step--accept > .step-header {
+        flex-shrink: 0;
+    }
+
+    body[data-evo-install-step="1"] #form-content.evo-install__form .evo-install-step--accept .evo-install-acceptance {
+        display: flex;
+        flex-direction: column;
+        flex: 1 1 auto;
+        min-height: 0;
+        /* Plafond explicite : évite que le contenu impose une hauteur > viewport (scroll du body) */
+        max-height: min(58vh, calc(100vh - 15rem));
+        max-height: min(58dvh, calc(100dvh - 15rem - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)));
+        margin: 0 0 0.75rem;
+        overflow: hidden;
+    }
+
+    body[data-evo-install-step="1"] #form-content.evo-install__form .evo-install-step--accept .evo-install-acceptance__text {
+        flex: 1 1 auto;
+        min-height: 0;
+        max-height: min(58vh, calc(100vh - 15rem));
+        max-height: min(58dvh, calc(100dvh - 15rem - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)));
+        overflow-x: hidden;
+        overflow-y: auto;
+        overscroll-behavior: contain;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    body[data-evo-install-step="1"] #form-content.evo-install__form .evo-install-step--accept .evo-install-acceptance__field {
+        flex-shrink: 0;
+    }
+
+    body[data-evo-install-step="1"] .evo-install__actions {
+        flex-shrink: 0;
     }
 }
 
 @media (max-width: 768px) {
     .evo-install__header {
+        display: flex;
         flex-direction: row;
-        flex-wrap: wrap;
         align-items: center;
-        gap: 0.75rem;
+        justify-content: space-between;
+        gap: 0.65rem;
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
+        box-sizing: border-box;
+    }
+
+    .evo-install__brand {
+        flex: 1 1 auto;
+        min-width: 0;
+        width: auto;
+    }
+
+    .evo-install__product {
+        font-size: clamp(1.125rem, 4.5vw, 1.3rem);
+        line-height: 1.25;
+        word-wrap: break-word;
+        overflow-wrap: anywhere;
+    }
+
+    .evo-install__subtitle {
+        font-size: 0.8125rem;
+        line-height: 1.35;
+        word-wrap: break-word;
+        overflow-wrap: anywhere;
     }
 
     .evo-install__meta {
-        flex-basis: 100%;
-        width: 100%;
-        text-align: left;
+        flex: 0 0 auto;
+        width: auto;
+        text-align: right;
+        align-self: center;
+    }
+
+    .evo-install__pill {
+        max-width: 100%;
+        box-sizing: border-box;
+        white-space: normal;
+        word-break: break-word;
     }
 }
 
@@ -1074,7 +1125,39 @@ body.evo-install.evo-install--blocked {
 
 .evo-install__step.is-done .evo-install__dot {
     background: transparent;
+    color: inherit;
+}
+
+/* Étape terminée : icône d’étape en pâle + coche par-dessus */
+.evo-install__dot--stacked .evo-install__dot-base,
+.evo-install__dot--stacked .evo-install__dot-check {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+    pointer-events: none;
+}
+
+.evo-install__dot--stacked .evo-install__dot-base {
+    z-index: 0;
+    color: var(--evo-ink-muted);
+    opacity: 0.38;
+}
+
+.evo-install__dot--stacked .evo-install__dot-check {
+    z-index: 1;
     color: #34d399;
+    opacity: 1;
+}
+
+.evo-install__dot--stacked .evo-install__check {
+    width: 22px !important;
+    height: 22px !important;
+    min-width: 22px;
+    min-height: 22px;
+    filter: drop-shadow(0 0 3px rgba(15, 23, 42, 0.85));
 }
 
 .evo-install__step.has-error.is-active .evo-install__dot {
@@ -1170,6 +1253,11 @@ body[data-evo-install-step="0"] #form-content.evo-install__form {
     box-sizing: border-box;
     text-align: left;
     overflow-x: clip;
+}
+
+#form-content.evo-install__form .step-content {
+    flex: 1 1 auto;
+    min-height: 0;
 }
 
 .step-content.row {
@@ -1296,19 +1384,50 @@ body.evo-install-lang-text--exit[data-evo-install-step="0"] .evo-install__eta-co
 
 /* —— Acceptation (disclaimer) —— */
 .evo-install-acceptance {
+    display: flex;
+    flex-direction: column;
     margin: 0 0 1rem;
-    border: 1px solid var(--evo-border);
-    border-radius: 5px;
-    background: rgba(2, 6, 23, 0.35);
     max-height: min(42vh, 320px);
-    overflow: auto;
+    overflow: hidden;
 }
 
 .evo-install-acceptance__text {
+    flex: 1 1 auto;
+    min-height: 0;
+    max-height: min(42vh, 300px);
+    max-height: min(42dvh, 300px);
+    box-sizing: border-box;
     padding: 0.85rem 1rem;
     font-size: 0.8125rem;
     line-height: 1.55;
     color: var(--evo-ink-muted);
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(56, 189, 248, 0.55) rgba(15, 23, 42, 0.65);
+}
+
+.evo-install-acceptance__text::-webkit-scrollbar {
+    width: 8px;
+}
+
+.evo-install-acceptance__text::-webkit-scrollbar-track {
+    background: rgba(15, 23, 42, 0.65);
+    border-radius: 5px;
+}
+
+.evo-install-acceptance__text::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, rgba(56, 189, 248, 0.55), rgba(14, 165, 233, 0.45));
+    border-radius: 5px;
+    border: 2px solid transparent;
+    background-clip: padding-box;
+}
+
+.evo-install-acceptance__text::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg, rgba(56, 189, 248, 0.75), rgba(14, 165, 233, 0.6));
+    background-clip: padding-box;
 }
 
 .evo-install-acceptance__field {
@@ -1495,6 +1614,23 @@ body.evo-install-lang-text--exit[data-evo-install-step="0"] .evo-install__eta-co
     background: var(--evo-accent-soft);
     border-color: rgba(56, 189, 248, 0.3);
     color: #bae6fd;
+}
+
+/* Alerte SQLite (étape base) : panneau néon aligné sur l’accent install */
+.db-alert.alert-info {
+    padding: 1rem 1.1rem;
+    border-radius: 0;
+    color: #e0f2fe;
+    background: linear-gradient(
+        145deg,
+        rgba(56, 189, 248, 0.16) 0%,
+        rgba(15, 23, 42, 0.92) 42%,
+        rgba(30, 41, 59, 0.75) 100%
+    );
+    border: 1px solid rgba(56, 189, 248, 0.48);
+    box-shadow: none;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
 }
 
 .mb-6 {
@@ -1687,7 +1823,7 @@ body.evo-install-lang-text--exit[data-evo-install-step="0"] .evo-install__eta-co
     bottom: 0;
     z-index: 2;
     margin: 0;
-    margin-top: auto;
+    margin-top: 5px;
     padding: var(--evo-install-zone-padding-y) 0;
     padding-bottom: max(var(--evo-install-zone-padding-y), env(safe-area-inset-bottom, 0px));
     border-top: 1px solid var(--evo-border);
@@ -1706,7 +1842,7 @@ body.evo-install-lang-text--exit[data-evo-install-step="0"] .evo-install__eta-co
 .evo-install__actions--solo {
     justify-content: center;
     margin: 0;
-    margin-top: auto;
+    margin-top: 5px;
     padding: var(--evo-install-zone-padding-y) 0;
     padding-bottom: max(var(--evo-install-zone-padding-y), env(safe-area-inset-bottom, 0px));
     border-top: 1px solid var(--evo-border);

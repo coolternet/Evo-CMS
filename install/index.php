@@ -99,6 +99,8 @@ function install_lucide_paths(string $name): string {
 		'circle-check' => '<circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/>',
 		'circle-x' => '<circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/>',
 		'check' => '<path d="M20 6 9 17l-5-5"/>',
+		'menu' => '<line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/>',
+		'x' => '<path d="M18 6 6 18"/><path d="m6 6 12 12"/>',
 		'chevron-left' => '<path d="m15 18-6-6 6-6"/>',
 		'chevron-right' => '<path d="m9 18 6-6-6-6"/>',
 		'link' => '<path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>',
@@ -120,6 +122,40 @@ function install_lucide_icon(string $name, array $attrs = []): string {
 	$aria = $ariaHidden ? ' aria-hidden="true"' : '';
 	$cls = $class !== '' ? ' class="' . $class . '"' : '';
 	return '<svg xmlns="http://www.w3.org/2000/svg" width="' . $w . '" height="' . $h . '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="' . htmlspecialchars($sw, ENT_QUOTES, 'UTF-8') . '" stroke-linecap="round" stroke-linejoin="round"' . $cls . $aria . '>' . $inner . '</svg>';
+}
+
+/**
+ * Barre sociale + copyright (barre latérale installation).
+ */
+function install_render_eta_html(array $install_eta_links, string $extraClass = ''): string {
+	$etaClass = 'evo-install__eta' . ($extraClass !== '' ? ' ' . $extraClass : '');
+	ob_start();
+	?>
+				<div class="<?= htmlspecialchars($etaClass, ENT_QUOTES, 'UTF-8') ?>">
+					<?php if (!empty($install_eta_links)): ?>
+					<nav class="evo-install__eta-social" aria-label="<?= htmlspecialchars(__('install.social_nav_aria'), ENT_QUOTES, 'UTF-8') ?>">
+						<?php foreach ($install_eta_links as $eta_link):
+							$eta_href = $eta_link['href'];
+							$is_skype = str_starts_with($eta_href, 'skype:');
+							$eta_lucide = $eta_link['lucide'] ?? 'link';
+							$eta_aria_esc = htmlspecialchars($eta_link['label'] ?? $eta_link['title'] ?? '', ENT_QUOTES, 'UTF-8');
+							$eta_brand = isset($eta_link['brand']) ? (string) $eta_link['brand'] : '';
+							$eta_brand_svg = $eta_brand !== '' ? install_eta_brand_svg($eta_brand) : null;
+							?>
+						<a class="evo-install__eta-social-link" href="<?= htmlspecialchars($eta_href, ENT_QUOTES, 'UTF-8') ?>" title="<?= htmlspecialchars($eta_link['title'], ENT_QUOTES, 'UTF-8') ?>" aria-label="<?= $eta_aria_esc ?>"<?php if (!$is_skype): ?> target="_blank" rel="noopener noreferrer"<?php endif; ?>><?php
+							if ($eta_brand_svg !== null) {
+								echo $eta_brand_svg;
+							} else {
+								echo install_lucide_icon($eta_lucide, ['class' => 'evo-install__eta-ico', 'width' => 16, 'height' => 16]);
+							}
+							?></a>
+						<?php endforeach; ?>
+					</nav>
+					<?php endif; ?>
+					<p class="evo-install__eta-copyright"><?= htmlspecialchars(str_replace('%year%', (string) date('Y'), __('install.copyright')), ENT_QUOTES, 'UTF-8') ?></p>
+				</div>
+	<?php
+	return ob_get_clean();
 }
 
 $install_locale_ids = [];
@@ -167,6 +203,105 @@ $install_step_dot_icons = [
 	STEP_INSTALL  => 'download',
 	STEP_CLEANUP  => 'flag',
 ];
+
+/**
+ * Sous-titre descriptif pour le card-header mobile (même contenu que les .step-description d’étape).
+ */
+function install_card_header_subtitle(int $cur_step, string $failed, $done): string {
+	switch ($cur_step) {
+		case STEP_LANGUAGE:
+			return __('language.description');
+		case STEP_ACCEPT:
+			return __('acceptance.description');
+		case STEP_SYSCHECK:
+			return __('checks.step_description');
+		case STEP_DATABASE:
+			return __('database.step_description');
+		case STEP_CONFIG:
+			return __('config.step_description');
+		case STEP_INSTALL:
+			if ($failed !== '') {
+				return __('install.failed');
+			}
+			if (!empty($done)) {
+				return __('install.success_legend');
+			}
+			return __('install.please_wait');
+		case STEP_CLEANUP:
+			return __('install.success_legend');
+		default:
+			return '';
+	}
+}
+
+/**
+ * Fil d’étapes (réutilisable : barre latérale desktop / bloc sous l’en-tête mobile).
+ */
+function install_render_progress_nav_html(
+	array $steps,
+	array $install_step_dot_icons,
+	int $cur_step,
+	string $warning,
+	string $ariaLabel,
+	string $extraNavClass
+): string {
+	$progress_clickable = ($cur_step >= 0 && $cur_step < STEP_INSTALL);
+	$navClass = trim('evo-install__progress ' . $extraNavClass);
+	ob_start();
+	echo '<nav class="' . htmlspecialchars($navClass, ENT_QUOTES, 'UTF-8') . '" aria-label="' . htmlspecialchars($ariaLabel, ENT_QUOTES, 'UTF-8') . '">';
+	echo '<ol class="evo-install__steps">';
+	foreach ($steps as $step => $tag) {
+		$isActive = $cur_step == $step;
+		$isCompleted = $cur_step > $step;
+		$hasError = $isActive && !empty($warning);
+
+		$liClass = 'evo-install__step';
+		if ($isActive) {
+			$liClass .= ' is-active';
+		} elseif ($isCompleted) {
+			$liClass .= ' is-done';
+		} else {
+			$liClass .= ' is-todo';
+		}
+		if ($hasError) {
+			$liClass .= ' has-error';
+		}
+
+		$tagHtml = htmlentities($tag, ENT_COMPAT, 'UTF-8');
+		$dot_icon = $install_step_dot_icons[$step] ?? 'circle';
+
+		ob_start();
+		echo '<span class="evo-install__dot' . ($isCompleted ? ' evo-install__dot--stacked' : '') . '">';
+		if ($isCompleted) {
+			echo '<span class="evo-install__dot-base" aria-hidden="true">';
+			echo install_lucide_icon($dot_icon, ['class' => 'evo-install__dot-icon', 'width' => 24, 'height' => 24]);
+			echo '</span>';
+			echo '<span class="evo-install__dot-check" aria-hidden="true">';
+			echo install_lucide_icon('check', ['class' => 'evo-install__check', 'width' => 24, 'height' => 24]);
+			echo '</span>';
+		} elseif ($hasError) {
+			echo '<span class="evo-install__dot-x">!</span>';
+		} else {
+			echo install_lucide_icon($dot_icon, ['class' => 'evo-install__dot-icon', 'width' => 24, 'height' => 24]);
+		}
+		echo '</span>';
+		echo '<span class="evo-install__step-label">' . $tagHtml . '</span>';
+		$stepBody = ob_get_clean();
+
+		echo '<li class="' . htmlspecialchars($liClass, ENT_QUOTES, 'UTF-8') . '">';
+		echo '<span class="evo-install__step-track" aria-hidden="true"></span>';
+		if ($isCompleted && $progress_clickable) {
+			echo '<button type="submit" form="form-content" name="step" value="' . (int) $step . '" class="evo-install__step-nav" title="' . htmlspecialchars($tag, ENT_QUOTES, 'UTF-8') . '">';
+			echo $stepBody;
+			echo '</button>';
+		} else {
+			echo $stepBody;
+		}
+		echo '</li>';
+	}
+	echo '</ol></nav>';
+	return ob_get_clean();
+}
 
 $next_step = $cur_step = isset($_POST['step']) ? (int)$_POST['step'] : 0;
 $from_step = isset($_POST['from_step']) ? (int)$_POST['from_step'] : 0;
@@ -972,6 +1107,10 @@ $install_eta_links = [
 	],
 ];
 
+$install_progress_nav_sidebar = install_render_progress_nav_html($steps, $install_step_dot_icons, $cur_step, $warning, __('install.nav_aria'), 'evo-install__progress--sidebar');
+$install_eta_html_sidebar = install_render_eta_html($install_eta_links, 'evo-install__eta--desktop');
+$install_eta_html_mobile = install_render_eta_html($install_eta_links, 'evo-install__eta--mobile');
+
 $install_pill_display = 'v' . EVO_VERSION . '-' . EVO_BUILD;
 $install_pill_display_esc = htmlspecialchars($install_pill_display, ENT_QUOTES, 'UTF-8');
 $install_pill_tooltip = htmlspecialchars(
@@ -1010,12 +1149,6 @@ $install_pill_tooltip = htmlspecialchars(
     </div>
     <div class="evo-install__frame">
         <header class="evo-install__header">
-            <?php if ($cur_step >= 0): ?>
-            <button type="button" class="evo-install__nav-toggle" id="evo-install-nav-toggle" aria-expanded="false" aria-controls="evo-install-sidebar" data-evo-install-label-open="<?= htmlspecialchars(__('install.nav_open_menu'), ENT_QUOTES, 'UTF-8') ?>" data-evo-install-label-close="<?= htmlspecialchars(__('install.nav_close_menu'), ENT_QUOTES, 'UTF-8') ?>" aria-label="<?= htmlspecialchars(__('install.nav_open_menu'), ENT_QUOTES, 'UTF-8') ?>">
-                <span class="evo-install__nav-toggle-icon evo-install__nav-toggle-icon--menu" aria-hidden="true"><?= install_lucide_icon('menu', ['class' => 'evo-install__nav-toggle-svg', 'width' => 24, 'height' => 24]) ?></span>
-                <span class="evo-install__nav-toggle-icon evo-install__nav-toggle-icon--close" hidden aria-hidden="true"><?= install_lucide_icon('x', ['class' => 'evo-install__nav-toggle-svg', 'width' => 24, 'height' => 24]) ?></span>
-            </button>
-            <?php endif; ?>
             <div class="evo-install__brand">
                 <h1 class="evo-install__product">Evo-CMS</h1>
                 <p class="evo-install__subtitle"><?= __('install.subtitle') ?></p>
@@ -1026,91 +1159,29 @@ $install_pill_tooltip = htmlspecialchars(
         </header>
 
         <?php if ($cur_step >= 0): ?>
-        <div class="evo-install__sidebar-backdrop" id="evo-install-sidebar-backdrop" aria-hidden="true"></div>
         <div class="evo-install__split-wrap">
-        <aside id="evo-install-sidebar" class="evo-install__sidebar">
-                <div class="evo-install__sidebar-head">
-                    <button type="button" class="evo-install__sidebar-close" id="evo-install-sidebar-close" aria-label="<?= htmlspecialchars(__('install.nav_close_menu'), ENT_QUOTES, 'UTF-8') ?>"><?= install_lucide_icon('x', ['class' => 'evo-install__sidebar-close-svg', 'width' => 22, 'height' => 22]) ?></button>
-                </div>
-                <nav class="evo-install__progress" aria-label="<?= htmlspecialchars(__('install.nav_aria'), ENT_QUOTES, 'UTF-8') ?>">
-                    <ol class="evo-install__steps">
-                    <?php
-                    $progress_clickable = ($cur_step >= 0 && $cur_step < STEP_INSTALL);
-                    foreach ($steps as $step => $tag) {
-                        $isActive = $cur_step == $step;
-                        $isCompleted = $cur_step > $step;
-                        $hasError = $isActive && !empty($warning);
-
-                        $liClass = 'evo-install__step';
-                        if ($isActive) {
-                            $liClass .= ' is-active';
-                        } elseif ($isCompleted) {
-                            $liClass .= ' is-done';
-                        } else {
-                            $liClass .= ' is-todo';
-                        }
-                        if ($hasError) {
-                            $liClass .= ' has-error';
-                        }
-
-                        $tagHtml = htmlentities($tag, ENT_COMPAT, 'UTF-8');
-                        $dot_icon = $install_step_dot_icons[$step] ?? 'circle';
-
-                        ob_start();
-                        echo '<span class="evo-install__dot">';
-                        if ($isCompleted) {
-                            echo install_lucide_icon('check', ['class' => 'evo-install__check', 'width' => 24, 'height' => 24]);
-                        } elseif ($hasError) {
-                            echo '<span class="evo-install__dot-x">!</span>';
-                        } else {
-                            echo install_lucide_icon($dot_icon, ['class' => 'evo-install__dot-icon', 'width' => 24, 'height' => 24]);
-                        }
-                        echo '</span>';
-                        echo '<span class="evo-install__step-label">' . $tagHtml . '</span>';
-                        $stepBody = ob_get_clean();
-
-                        echo '<li class="' . $liClass . '">';
-                        echo '<span class="evo-install__step-track" aria-hidden="true"></span>';
-                        if ($isCompleted && $progress_clickable) {
-                            echo '<button type="submit" form="form-content" name="step" value="' . (int) $step . '" class="evo-install__step-nav" title="' . htmlspecialchars($tag, ENT_QUOTES, 'UTF-8') . '">';
-                            echo $stepBody;
-                            echo '</button>';
-                        } else {
-                            echo $stepBody;
-                        }
-                        echo '</li>';
-                    }
-                    ?>
-                    </ol>
-                </nav>
-                <div class="evo-install__eta">
-                    <?php if (!empty($install_eta_links)): ?>
-                    <nav class="evo-install__eta-social" aria-label="<?= htmlspecialchars(__('install.social_nav_aria'), ENT_QUOTES, 'UTF-8') ?>">
-                        <?php foreach ($install_eta_links as $eta_link):
-                            $eta_href = $eta_link['href'];
-                            $is_skype = str_starts_with($eta_href, 'skype:');
-                            $eta_lucide = $eta_link['lucide'] ?? 'link';
-                            $eta_aria_esc = htmlspecialchars($eta_link['label'] ?? $eta_link['title'] ?? '', ENT_QUOTES, 'UTF-8');
-                            $eta_brand = isset($eta_link['brand']) ? (string) $eta_link['brand'] : '';
-                            $eta_brand_svg = $eta_brand !== '' ? install_eta_brand_svg($eta_brand) : null;
-                            ?>
-                        <a class="evo-install__eta-social-link" href="<?= htmlspecialchars($eta_href, ENT_QUOTES, 'UTF-8') ?>" title="<?= htmlspecialchars($eta_link['title'], ENT_QUOTES, 'UTF-8') ?>" aria-label="<?= $eta_aria_esc ?>"<?php if (!$is_skype): ?> target="_blank" rel="noopener noreferrer"<?php endif; ?>><?php
-                            if ($eta_brand_svg !== null) {
-                                echo $eta_brand_svg;
-                            } else {
-                                echo install_lucide_icon($eta_lucide, ['class' => 'evo-install__eta-ico', 'width' => 16, 'height' => 16]);
-                            }
-                            ?></a>
-                        <?php endforeach; ?>
-                    </nav>
-                    <?php endif; ?>
-                    <p class="evo-install__eta-copyright"><?= htmlspecialchars(str_replace('%year%', (string) date('Y'), __('install.copyright')), ENT_QUOTES, 'UTF-8') ?></p>
-                </div>
+        <aside id="evo-install-sidebar" class="evo-install__sidebar evo-install__sidebar--desktop">
+                <?= $install_progress_nav_sidebar ?>
+                <?= $install_eta_html_sidebar ?>
         </aside>
         <?php endif; ?>
 
         <main class="evo-install__main">
             <div class="evo-install__card<?= $cur_step >= 0 ? ' evo-install__card--split' : '' ?>">
+                <?php if ($cur_step >= 0):
+                    $card_header_icon = $install_step_dot_icons[$cur_step] ?? 'circle';
+                    $card_header_subtitle = install_card_header_subtitle($cur_step, $failed, $done ?? null);
+                    ?>
+                <div class="card-header evo-install__card-header">
+                    <span class="evo-install__card-header-icon" aria-hidden="true"><?= install_lucide_icon($card_header_icon, ['class' => 'evo-install__card-header-svg', 'width' => 22, 'height' => 22]) ?></span>
+                    <div class="evo-install__card-header-text">
+                        <h3 class="evo-install__card-header-title mb-0"><?= htmlspecialchars($steps[$cur_step] ?? '', ENT_QUOTES, 'UTF-8') ?></h3>
+                        <?php if ($card_header_subtitle !== ''): ?>
+                        <p class="evo-install__card-header-subtitle"><?= htmlspecialchars($card_header_subtitle, ENT_QUOTES, 'UTF-8') ?></p>
+                        <?php endif; ?>
+                    </div>
+                </div>
+                <?php endif; ?>
                 <div class="evo-install__panel">
                     <form method="post" autocomplete="off" id="form-content" class="evo-install__form container">
                         <?php if (!empty($warning)): ?>
@@ -1151,7 +1222,7 @@ $install_pill_tooltip = htmlspecialchars(
                                 </fieldset>
                             </div>
                         <?php elseif ($cur_step == STEP_ACCEPT): ?>
-                            <div class="step-content evo-install-step evo-install-step--enter">
+                            <div class="step-content evo-install-step evo-install-step--enter evo-install-step--accept">
                                 <div class="step-header">
                                     <div class="step-header__art step-header__art--accept" aria-hidden="true">
                                         <svg class="step-header__svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
@@ -1172,7 +1243,7 @@ $install_pill_tooltip = htmlspecialchars(
                                 </div>
                             </div>
                         <?php elseif ($cur_step == STEP_SYSCHECK): ?>
-                            <div class="step-content">
+                            <div class="step-content evo-install-step--checks">
                                 <div class="step-header">
                                     <div class="step-header__art step-header__art--check" aria-hidden="true">
                                         <svg class="step-header__svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
@@ -1182,9 +1253,7 @@ $install_pill_tooltip = htmlspecialchars(
                                     <h2 class="step-title"><?= __('checks.step_title') ?></h2>
                                     <p class="step-description"><?= __('checks.step_description') ?></p>
                                 </div>
-                                
-                                <div class="alert alert-info mb-6"><?= __('checks.legend') ?></div>
-                                
+
                                 <div class="checks-list">
                                     <?php
                                     foreach ($checks as $check) {
@@ -1339,7 +1408,7 @@ $install_pill_tooltip = htmlspecialchars(
                                 <?php endif ?>
                             </div>
                         <?php elseif ($cur_step == STEP_INSTALL): ?>
-                            <div class="step-content">                                
+                            <div class="step-content">
                                 <?php if ($failed): ?>
                                     <div class="alert alert-error">
                                         <h6><?= __('install.failed') ?></h6>
@@ -1416,6 +1485,9 @@ $install_pill_tooltip = htmlspecialchars(
 						</div>
 						<?php endif; ?>
 					</form>
+					<?php if ($cur_step >= 0): ?>
+					<?= $install_eta_html_mobile ?>
+					<?php endif; ?>
                 </div>
             </div>
         </main>
