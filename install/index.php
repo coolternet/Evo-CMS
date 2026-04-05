@@ -327,6 +327,7 @@ $next_step = $cur_step = isset($_POST['step']) ? (int)$_POST['step'] : 0;
 $from_step = isset($_POST['from_step']) ? (int)$_POST['from_step'] : 0;
 $payload = isset($_POST['payload']) ? $_POST['payload'] : '';
 $warning = $failed = '';
+$hide_nav = false;
 
 $available_drivers = Database::AvailableDrivers();
 $db_types = array_intersect_key(['sqlite' => 'SQLite3', 'mysql' => 'MySQL'], array_flip($available_drivers));
@@ -1144,379 +1145,38 @@ $install_pill_tooltip = htmlspecialchars(
 	'UTF-8'
 );
 
-?>
-<!doctype html>
-<html lang="<?= htmlspecialchars($html_lang, ENT_QUOTES, 'UTF-8') ?>">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title><?= htmlspecialchars(__('install.page_title'), ENT_QUOTES, 'UTF-8') ?></title>
-    <style id="evo-install-critical">.evo-install__steps{list-style:none;margin:0;padding:0}</style>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link href="<?= $__href_bootstrap ?>" rel="stylesheet">
-    <link href="<?= $__href_flags_css ?>" rel="stylesheet">
-    <link href="<?= $__href_install_css ?>" rel="stylesheet">
-    <script src="<?= $__href_vendor ?>"></script>
-</head>
-<body class="evo-install<?= $cur_step < 0 ? ' evo-install--blocked' : '' ?><?= $cur_step >= 0 ? ' evo-install--has-sidebar' : '' ?>" data-evo-install-step="<?= (int) $cur_step ?>" data-evo-install-js-alert-mysql="<?= htmlspecialchars(__('install.alert_mysql_fields'), ENT_QUOTES, 'UTF-8') ?>" data-evo-install-js-alert-sqlite="<?= htmlspecialchars(__('install.alert_sqlite_name'), ENT_QUOTES, 'UTF-8') ?>"><script>
-try { if (localStorage.getItem('evoInstallColorMode') === 'light') { document.body.classList.add('evo-install--light'); } } catch (e) {}
-</script>
-    <div class="evo-install__ambient" aria-hidden="true">
-        <div class="evo-install__ambient-base"></div>
-        <div class="evo-install__ambient-glow evo-install__ambient-glow--top"></div>
-        <div class="evo-install__ambient-glow evo-install__ambient-glow--tl"></div>
-        <div class="evo-install__ambient-glow evo-install__ambient-glow--br"></div>
-    </div>
-    <div class="evo-install__frame">
-        <header class="evo-install__header">
-            <div class="evo-install__brand">
-                <h1 class="evo-install__product">Evo-CMS</h1>
-                <p class="evo-install__subtitle"><?= __('install.subtitle') ?></p>
-            </div>
-            <div class="evo-install__meta">
-                <span class="evo-install__pill" title="<?= $install_pill_tooltip ?>" aria-label="<?= $install_pill_display_esc ?>"><?= $install_pill_display_esc ?></span>
-            </div>
-        </header>
+require_once __DIR__ . '/install_views.php';
 
-        <?php if ($cur_step >= 0): ?>
-        <div class="evo-install__split-wrap">
-        <aside id="evo-install-sidebar" class="evo-install__sidebar evo-install__sidebar--desktop">
-                <?= $install_progress_nav_sidebar ?>
-                <?= $install_eta_html_sidebar ?>
-        </aside>
-        <?php endif; ?>
+$install_checks = isset($checks) && is_array($checks) ? $checks : [];
+$install_done = $done ?? null;
 
-        <main class="evo-install__main">
-            <div class="evo-install__card<?= $cur_step >= 0 ? ' evo-install__card--split' : '' ?>">
-                <?php if ($cur_step >= 0):
-                    $card_header_icon = $install_step_dot_icons[$cur_step] ?? 'circle';
-                    $card_header_subtitle = install_card_header_subtitle($cur_step, $failed, $done ?? null);
-                    ?>
-                <div class="card-header evo-install__card-header">
-                    <span class="evo-install__card-header-icon" aria-hidden="true"><?= install_lucide_icon($card_header_icon, ['class' => 'evo-install__card-header-svg', 'width' => 22, 'height' => 22]) ?></span>
-                    <div class="evo-install__card-header-text">
-                        <h3 class="evo-install__card-header-title mb-0"><?= htmlspecialchars($steps[$cur_step] ?? '', ENT_QUOTES, 'UTF-8') ?></h3>
-                        <?php if ($card_header_subtitle !== ''): ?>
-                        <p class="evo-install__card-header-subtitle"><?= htmlspecialchars($card_header_subtitle, ENT_QUOTES, 'UTF-8') ?></p>
-                        <?php endif; ?>
-                    </div>
-                </div>
-                <?php endif; ?>
-                <div class="evo-install__panel">
-                    <form method="post" autocomplete="off" id="form-content" class="evo-install__form container">
-                        <?php if (!empty($warning)): ?>
-                            <div class="alert alert-error">
-                                <?= $warning ?>
-                            </div>
-                        <?php endif; ?>
-                        
-                        <input type="hidden" name="language" value="<?= htmlspecialchars($install_locale, ENT_QUOTES, 'UTF-8') ?>">
-                        
-                        <?php if ($cur_step == STEP_LANGUAGE): ?>
-                            <div class="step-content evo-install-step evo-install-step--enter evo-install-step--lang-text-only">
-                                <div class="step-header">
-                                    <div class="step-header__art step-header__art--lang" aria-hidden="true">
-                                        <?= install_lucide_icon('earth', ['class' => 'step-header__svg', 'width' => 72, 'height' => 72]) ?>
-                                    </div>
-                                    <h2 class="step-title"><?= __('language.title') ?></h2>
-                                    <p class="step-description"><?= __('language.description') ?></p>
-                                </div>
-                                
-                                <fieldset class="evo-install-lang-fieldset mb-3">
-                                    <legend class="form-label"><?= htmlspecialchars(__('language.field_label'), ENT_QUOTES, 'UTF-8') ?></legend>
-                                    <ul class="evo-install-lang-list" role="list">
-                                        <?php
-                                        foreach ($install_language_options as $locale => $name) {
-                                            $isSel = $locale === $install_locale;
-                                            $nameEsc = htmlspecialchars($name, ENT_QUOTES, 'UTF-8');
-                                            echo '<li class="evo-install-lang-list__item" role="listitem">';
-                                            $flagHtml = Widgets::countryFlag(install_locale_country_code($locale));
-                                            $langHref = install_lang_switch_url($locale);
-                                            echo '<a href="' . $langHref . '" class="evo-install-lang-option' . ($isSel ? ' is-selected' : '') . '" id="install_lang_' . preg_replace('/[^a-z0-9_-]/i', '_', $locale) . '" aria-current="' . ($isSel ? 'true' : 'false') . '">';
-                                            echo '<span class="evo-install-lang-option__flag" aria-hidden="true">' . $flagHtml . '</span>';
-                                            echo '<span class="evo-install-lang-option__name">' . $nameEsc . '</span>';
-                                            echo '</a></li>';
-                                        }
-                                        ?>
-                                    </ul>
-                                </fieldset>
-                            </div>
-                        <?php elseif ($cur_step == STEP_ACCEPT): ?>
-                            <div class="step-content evo-install-step evo-install-step--enter evo-install-step--accept">
-                                <div class="step-header">
-                                    <div class="step-header__art step-header__art--accept" aria-hidden="true">
-                                        <svg class="step-header__svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                                            <?= install_lucide_paths('file-text') ?>
-                                        </svg>
-                                    </div>
-                                    <h2 class="step-title"><?= htmlspecialchars(__('acceptance.title'), ENT_QUOTES, 'UTF-8') ?></h2>
-                                    <p class="step-description"><?= htmlspecialchars(__('acceptance.description'), ENT_QUOTES, 'UTF-8') ?></p>
-                                </div>
-                                <div class="evo-install-acceptance">
-                                    <div class="evo-install-acceptance__text">
-                                        <?= nl2br(htmlspecialchars(__('acceptance.body'), ENT_QUOTES, 'UTF-8'), false) ?>
-                                    </div>
-                                </div>
-                                <div class="evo-install-acceptance__field form-check">
-                                    <input class="form-check-input" type="checkbox" name="install_accept" id="install_accept" value="1" required<?= !empty($_POST['install_accept']) ? ' checked' : '' ?>>
-                                    <label class="form-check-label" for="install_accept"><?= htmlspecialchars(__('acceptance.checkbox_label'), ENT_QUOTES, 'UTF-8') ?></label>
-                                </div>
-                            </div>
-                        <?php elseif ($cur_step == STEP_SYSCHECK): ?>
-                            <div class="step-content evo-install-step--checks">
-                                <div class="step-header">
-                                    <div class="step-header__art step-header__art--check" aria-hidden="true">
-                                        <svg class="step-header__svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                                            <?= install_lucide_paths('clipboard-check') ?>
-                                        </svg>
-                                    </div>
-                                    <h2 class="step-title"><?= __('checks.step_title') ?></h2>
-                                    <p class="step-description"><?= __('checks.step_description') ?></p>
-                                </div>
-
-                                <div class="checks-list">
-                                    <?php
-                                    foreach ($checks as $check) {
-                                        $isSuccess = $check[1];
-                                        $checkClass = $isSuccess ? 'success' : 'error';
-                                        $statusText = $isSuccess ? __('checks.status_ok') : __('checks.status_error');
-                                        
-                                        echo '<div class="check-item ' . $checkClass . '">';
-                                        if ($isSuccess) {
-                                            echo '<div class="check-icon"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="check-icon__svg" aria-hidden="true"><circle cx="12" cy="12" r="10" class="check-icon__stroke"/><path class="check-icon__stroke" d="m9 12 2 2 4-4"/></svg></div>';
-                                        } else {
-                                            echo '<div class="check-icon">' . install_lucide_icon('circle-x', ['class' => 'check-icon__svg', 'width' => 18, 'height' => 18]) . '</div>';
-                                        }
-                                        echo '<div class="check-text">' . htmlentities($check[0], ENT_COMPAT, 'UTF-8') . '</div>';
-                                        echo '<div class="check-status">' . $statusText . '</div>';
-                                        echo '</div>';
-                                    }
-                                    ?>
-                                </div>
-                            </div>
-                        <?php elseif ($cur_step == STEP_DATABASE): ?>
-                            <div class="step-content evo-install-step evo-install-step--enter">
-                                <div class="step-header">
-                                    <div class="step-header__art step-header__art--db" aria-hidden="true">
-                                        <svg class="step-header__svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                                            <?= install_lucide_paths('database') ?>
-                                        </svg>
-                                    </div>
-                                    <h2 class="step-title"><?= __('database.step_title') ?></h2>
-                                    <p class="step-description"><?= __('database.step_description') ?></p>
-                                </div>
-                                
-                                <div class="alert alert-info mb-6 db-alert">
-                                    <?= __('database.sqlite_legend') ?>
-                                </div>
-                                
-                                <div class="mb-3">
-                                    <label class="form-label" for="type"><?= __('database.db_type_label') ?></label>
-                                    <select class="form-select" id="type" name="db_type" required>
-                                        <?php
-                                        if (empty($db_types)) {
-                                            echo '<option value="sqlite">' . htmlspecialchars(__('database.sqlite_default'), ENT_QUOTES, 'UTF-8') . '</option>';
-                                        } else {
-                                            $defaultType = @$_POST['db_type'] ?: 'sqlite';
-                                            foreach ($db_types as $type => $label) {
-                                                $selected = ($type == $defaultType) ? ' selected="selected"' : '';
-                                                echo '<option value="' . $type . '"' . $selected . '>' . $label . '</option>';
-                                            }
-                                        }
-                                        ?>
-                                    </select>
-                                    <input type="hidden" id="db_type_backup" name="db_type_backup" value="<?= @$_POST['db_type'] ?: 'sqlite' ?>">
-                                </div>
-                                
-                                <div class="row db-fields-container">
-                                    <div class="col-md-6 mysql db-field mb-3">
-                                        <label class="form-label" for="host"><?= __('database.host') ?></label>
-                                        <input type="text" class="form-control" id="host" name="db_host" value="<?= post_e('db_host', 'localhost') ?>">
-                                    </div>
-                                    
-                                    <div class="col-md-6 sqlite mysql db-field mb-3">
-                                        <label class="form-label" for="dbname"><?= __('database.name') ?></label>
-                                        <input type="text" class="form-control" id="dbname" name="db_name" value="<?= post_e('db_name', 'db-' . substr(md5(uniqid()), 0, 6) . '.sqlite') ?>">
-                                    </div>
-                                    
-                                    <div class="col-md-6 mysql db-field mb-3">
-                                        <label class="form-label" for="username"><?= __('database.username') ?></label>
-                                        <input type="text" class="form-control" id="username" name="db_user" value="<?= post_e('db_user') ?>">
-                                    </div>
-                                    
-                                    <div class="col-md-6 mysql db-field mb-3">
-                                        <label class="form-label" for="password"><?= __('database.password') ?></label>
-                                        <input type="password" class="form-control" id="password" name="db_pass" value="<?= post_e('db_pass') ?>">
-                                    </div>
-                                    
-                                    <div class="col-md-6 sqlite mysql db-field mb-3">
-                                        <label class="form-label" for="prefixe"><?= __('database.prefix') ?></label>
-                                        <input type="text" class="form-control" id="prefixe" name="db_prefix" value="<?= post_e('db_prefix', 'evo_') ?>">
-                                    </div>
-                                </div>
-                            </div>
-                        <?php elseif ($cur_step == STEP_CONFIG): ?>
-                            <?php
-								$scheme = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on' ? 'https' : 'http';
-								$url = $scheme.'://'.$_SERVER['HTTP_HOST'];
-								$dir = rtrim(strstr($_SERVER['REQUEST_URI'].'?', '?', true), '/');
-								$slash = strrpos($dir, '/');
-								$url .= $slash !== false ? substr($dir, 0, $slash) : $dir;
-                            ?>
-                            <?php if ($install_payload_array): ?>
-                            <input type="hidden" name="db_type" value="<?= htmlspecialchars((string) $install_payload_array[5], ENT_QUOTES, 'UTF-8') ?>">
-                            <input type="hidden" name="db_type_backup" value="<?= htmlspecialchars((string) $install_payload_array[5], ENT_QUOTES, 'UTF-8') ?>">
-                            <input type="hidden" name="db_host" value="<?= htmlspecialchars((string) $install_payload_array[0], ENT_QUOTES, 'UTF-8') ?>">
-                            <input type="hidden" name="db_user" value="<?= htmlspecialchars((string) $install_payload_array[1], ENT_QUOTES, 'UTF-8') ?>">
-                            <input type="hidden" name="db_pass" value="<?= htmlspecialchars((string) $install_payload_array[2], ENT_QUOTES, 'UTF-8') ?>">
-                            <input type="hidden" name="db_name" value="<?= htmlspecialchars((string) $install_payload_array[3], ENT_QUOTES, 'UTF-8') ?>">
-                            <input type="hidden" name="db_prefix" value="<?= htmlspecialchars((string) $install_payload_array[4], ENT_QUOTES, 'UTF-8') ?>">
-                            <?php endif; ?>
-                            <div class="step-content row evo-install-step evo-install-step--enter">
-                                <div class="step-header">
-                                    <div class="step-header__art step-header__art--cfg" aria-hidden="true">
-                                        <svg class="step-header__svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                                            <?= install_lucide_paths('settings') ?>
-                                        </svg>
-                                    </div>
-                                    <h2 class="step-title"><?= __('config.step_title') ?></h2>
-                                    <p class="step-description"><?= __('config.step_description') ?></p>
-                                </div>
-                                
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <div class="mb-3">
-                                            <label class="form-label" for="sitename"><?= __('config.sitename') ?></label>
-                                            <input type="text" class="form-control" id="sitename" name="name" value="<?= post_e('name', 'Evo-CMS '.EVO_VERSION) ?>">
-                                        </div>
-                                        
-                                        <div class="mb-3">
-                                            <label class="form-label" for="siteurl"><?= __('config.siteurl') ?></label>
-                                            <input type="text" class="form-control" id="siteurl" name="url" value="<?= post_e('url', $url) ?>">
-                                        </div>
-                                        
-                                        <div class="mb-3">
-                                            <label class="form-label" for="sitemail"><?= __('config.siteemail') ?></label>
-                                            <input type="email" class="form-control" id="sitemail" name="email" placeholder="<?= htmlspecialchars(__('config.email_placeholder'), ENT_QUOTES, 'UTF-8') ?>" value="<?= post_e('email') ?>">
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div class="mb-3">
-                                            <label class="form-label" for="sitelogin"><?= __('config.username') ?></label>
-                                            <input type="text" class="form-control" id="sitelogin" name="admin" value="<?= post_e('admin', 'admin') ?>">
-                                        </div>
-                                        
-                                        <div class="mb-3">
-                                            <label class="form-label" for="sitepass"><?= __('config.password') ?></label>
-                                            <input type="password" class="form-control" id="sitepass" name="admin_pass" value="<?= post_e('admin_pass') ?>">
-                                        </div>
-                                        
-                                        <div class="mb-3">
-                                            <label class="form-label" for="sitepass2"><?= __('config.password_confirm') ?></label>
-                                            <input type="password" class="form-control" id="sitepass2" name="admin_pass_confirm" value="<?= post_e('admin_pass_confirm') ?>" placeholder="<?= htmlspecialchars(__('config.password_confirm_placeholder'), ENT_QUOTES, 'UTF-8') ?>">
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <?php if (EVO_REPORT_EMAIL): ?>
-                                <div class="mb-3">
-                                    <label class="form-label">
-                                        <input type="checkbox" name="report" id="report" value="1" checked>
-                                        <?= __('config.report') ?>
-                                    </label>
-                                </div>
-                                <?php endif ?>
-                            </div>
-                        <?php elseif ($cur_step == STEP_INSTALL): ?>
-                            <div class="step-content">
-                                <?php if ($failed): ?>
-                                    <div class="alert alert-error">
-                                        <h6><?= __('install.failed') ?></h6>
-                                        <span><?= __('install.failed_legend') ?></span>
-                                        <p><?= $failed ?></p>
-                                    </div>
-                                <?php elseif ($done): ?>
-                                    <div class="alert alert-success">
-                                        <h6><?= __('install.success') ?></h6>
-                                        <span><?= __('install.success_legend') ?></span>
-                                    </div>
-                                    
-                                    <div class="row">
-                                        <div class="col-md-6">
-                                            <div class="mb-3">
-                                                <label class="form-label"><?= __('config.siteurl') ?></label>
-                                                <div class="form-control" style="background: var(--system-background-secondary); color: var(--system-label);">
-                                                    <?= $_POST['url'] ?>
-                                                </div>
-                                            </div>
-                                            
-                                            <div class="mb-3">
-                                                <label class="form-label"><?= __('config.adminurl') ?></label>
-                                                <div class="form-control" style="background: var(--system-background-secondary); color: var(--system-label);">
-                                                    <?= $_POST['url'] ?>/admin
-                                                </div>
-                                            </div>
-                                        </div>
-                                        
-                                        <div class="col-md-6">
-                                            <div class="mb-3">
-                                                <label class="form-label"><?= __('config.username') ?></label>
-                                                <div class="form-control" style="background: var(--system-background-secondary); color: var(--system-label);">
-                                                    <?= $_POST['admin'] ?>
-                                                </div>
-                                            </div>
-                                            
-                                            <div class="mb-3">
-                                                <label class="form-label"><?= __('config.password') ?></label>
-                                                <div class="form-control" style="background: var(--system-background-secondary); color: var(--system-label);">
-                                                    <?= $_POST['admin_pass'] ?>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                <?php endif; ?>
-                            </div>
-                        <?php endif; ?>
-
-						<input type="hidden" name="from_step" value="<?= $cur_step ?>">
-						<input type="hidden" name="payload" value="<?= is_array($payload) ? base64_encode(serialize($payload)) : $payload ?>">
-
-						<?php if (empty($hide_nav)): ?>
-						<div class="evo-install__actions" role="group" aria-label="<?= htmlspecialchars(__('install.nav_aria'), ENT_QUOTES, 'UTF-8') ?>">
-							<?php if ($cur_step > STEP_LANGUAGE): ?>
-							<button type="submit" name="step" value="<?= (int) ($cur_step - 1) ?>" class="evo-install__btn evo-install__btn--back" formnovalidate>
-								<?= install_lucide_icon('chevron-left', ['class' => 'evo-install__btn-ico', 'width' => 20, 'height' => 20]) ?>
-								<span><?= __('buttons.previous') ?></span>
-							</button>
-							<?php endif; ?>
-							<?php if ($next_step <= max(array_keys($steps))): ?>
-							<button type="submit" name="step" value="<?= $next_step ?>" id="install-step-next" class="evo-install__btn evo-install__btn--next"<?= ($next_step >= STEP_CONFIG ? ' onclick="$(\'#form-content\').toggle();"' : '') ?>>
-								<span><?= __('buttons.next') ?></span>
-								<?= install_lucide_icon('chevron-right', ['class' => 'evo-install__btn-ico', 'width' => 20, 'height' => 20]) ?>
-							</button>
-							<?php endif; ?>
-						</div>
-						<?php elseif (isset($done) && $done): ?>
-						<div class="evo-install__actions evo-install__actions--solo">
-							<button type="submit" name="step" value="<?= STEP_CLEANUP ?>" class="evo-install__btn evo-install__btn--success evo-install__btn--block">
-								<?= install_lucide_icon('check', ['class' => 'evo-install__btn-ico', 'width' => 22, 'height' => 22, 'stroke-width' => '2.2']) ?>
-								<span><?= __('install.complete') ?></span>
-							</button>
-						</div>
-						<?php endif; ?>
-					</form>
-					<?php if ($cur_step >= 0): ?>
-					<?= $install_eta_html_mobile ?>
-					<?php endif; ?>
-                </div>
-            </div>
-        </main>
-        <?php if ($cur_step >= 0): ?>
-        </div>
-        <?php endif; ?>
-    </div>
-    <script src="<?= $__href_install_js ?>"></script>
-</body>
-</html>
+echo install_render_install_page([
+	'html_lang' => $html_lang,
+	'href_bootstrap' => $__href_bootstrap,
+	'href_flags' => $__href_flags_css,
+	'href_install_css' => $__href_install_css,
+	'href_install_js' => $__href_install_js,
+	'href_vendor' => $__href_vendor,
+	'cur_step' => $cur_step,
+	'warning' => $warning,
+	'install_locale' => $install_locale,
+	'install_language_options' => $install_language_options,
+	'steps' => $steps,
+	'install_step_dot_icons' => $install_step_dot_icons,
+	'failed' => $failed,
+	'done' => $install_done,
+	'checks' => $install_checks,
+	'db_types' => $db_types,
+	'install_payload_array' => $install_payload_array,
+	'default_site_url' => install_guess_default_site_url(),
+	'next_step' => $next_step,
+	'hide_nav' => !empty($hide_nav),
+	'payload' => $payload,
+	'install_progress_nav_sidebar' => $install_progress_nav_sidebar,
+	'install_eta_html_sidebar' => $install_eta_html_sidebar,
+	'install_eta_html_mobile' => $install_eta_html_mobile,
+	'pill_tooltip' => $install_pill_tooltip,
+	'pill_display_esc' => $install_pill_display_esc,
+	'alert_mysql' => __('install.alert_mysql_fields'),
+	'alert_sqlite' => __('install.alert_sqlite_name'),
+]);
