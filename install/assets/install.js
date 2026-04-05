@@ -120,19 +120,15 @@
     }
 
     function initThemeToggle() {
-        var btn = document.getElementById('evo-install-theme-toggle');
-        if (!btn) {
+        var buttons = document.querySelectorAll('.evo-install__theme-toggle');
+        if (!buttons.length) {
             return;
         }
-        var textEl = btn.querySelector('.evo-install__theme-toggle-text');
-        var labelLight = btn.getAttribute('data-evo-install-label-light') || '';
-        var labelDark = btn.getAttribute('data-evo-install-label-dark') || '';
         function setLightMode(on) {
             document.body.classList.toggle('evo-install--light', on);
-            btn.setAttribute('aria-pressed', on ? 'true' : 'false');
-            if (textEl) {
-                textEl.textContent = on ? labelDark : labelLight;
-            }
+            buttons.forEach(function (btn) {
+                btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+            });
             try {
                 localStorage.setItem('evoInstallColorMode', on ? 'light' : 'dark');
             } catch (e) {
@@ -140,8 +136,10 @@
             }
         }
         setLightMode(document.body.classList.contains('evo-install--light'));
-        btn.addEventListener('click', function () {
-            setLightMode(!document.body.classList.contains('evo-install--light'));
+        buttons.forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                setLightMode(!document.body.classList.contains('evo-install--light'));
+            });
         });
     }
 
